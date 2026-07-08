@@ -199,7 +199,7 @@ function MobileMenu({
   isOpen: boolean;
   onClose: () => void;
 }) {
-  const [openItem, setOpenItem] = useState<string>("Find Services");
+  const [openItem, setOpenItem] = useState<string>("");
 
   if (!isOpen) {
     return null;
@@ -207,7 +207,7 @@ function MobileMenu({
 
   return (
     <div className="fixed inset-0 z-[100] bg-white md:hidden">
-      <div className="flex h-20 items-center justify-between border-b border-[#ece7e2] bg-white px-5 shadow-sm">
+      <div className="sticky top-0 z-10 flex h-20 items-center justify-between border-b border-[#ece7e2] bg-white px-5 shadow-sm">
         <button
           type="button"
           onClick={onClose}
@@ -234,31 +234,8 @@ function MobileMenu({
         </button>
       </div>
 
-      <div className="h-[calc(100dvh-5rem)] overflow-y-auto px-5 py-6">
-        <div className="rounded-[28px] bg-[#111111] p-5 text-white">
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-[#ffb0a3]">
-            Occasions marketplace
-          </p>
-
-          <h2 className="mt-3 text-2xl font-black leading-tight">
-            Find what your function needs.
-          </h2>
-
-          <p className="mt-3 text-sm leading-6 text-white/65">
-            Browse services, occasions, providers and business tools in one
-            place.
-          </p>
-
-          <Link
-            href="/search"
-            onClick={onClose}
-            className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-2xl bg-[#ff5a40] px-5 text-sm font-black text-white"
-          >
-            Start Searching
-          </Link>
-        </div>
-
-        <div className="mt-6 divide-y divide-[#ece7e2]">
+      <div className="h-[calc(100dvh-5rem)] overflow-y-auto px-5 py-4">
+        <div className="divide-y divide-[#ece7e2]">
           {desktopNavItems.map((item) => (
             <MobileMenuItem
               key={item.label}
@@ -272,22 +249,24 @@ function MobileMenu({
           ))}
         </div>
 
-        <div className="mt-7 grid gap-3">
-          <Link
-            href="#list-business"
-            onClick={onClose}
-            className="flex min-h-14 items-center justify-center rounded-2xl bg-[#ff5a40] px-5 text-sm font-black text-white"
-          >
-            List Your Business
-          </Link>
+        <div className="sticky bottom-0 mt-8 border-t border-[#ece7e2] bg-white/95 py-4 backdrop-blur">
+          <div className="grid gap-3">
+            <Link
+              href="#list-business"
+              onClick={onClose}
+              className="flex min-h-14 items-center justify-center rounded-2xl bg-[#ff5a40] px-5 text-sm font-black text-white"
+            >
+              List Your Business
+            </Link>
 
-          <Link
-            href="/saved"
-            onClick={onClose}
-            className="flex min-h-14 items-center justify-center rounded-2xl border border-[#deded9] bg-white px-5 text-sm font-black text-[#111111]"
-          >
-            Saved Providers
-          </Link>
+            <Link
+              href="/saved"
+              onClick={onClose}
+              className="flex min-h-14 items-center justify-center rounded-2xl border border-[#deded9] bg-white px-5 text-sm font-black text-[#111111]"
+            >
+              Saved Providers
+            </Link>
+          </div>
         </div>
       </div>
     </div>
@@ -312,7 +291,7 @@ function MobileMenuItem({
       <button
         type="button"
         onClick={onToggle}
-        className="flex min-h-[76px] w-full items-center gap-4 py-4 text-left"
+        className="flex min-h-[74px] w-full items-center gap-4 py-4 text-left"
       >
         <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#fff0ec] text-[#ff5a40]">
           <Icon size={23} />
@@ -321,9 +300,6 @@ function MobileMenuItem({
         <span className="min-w-0 flex-1">
           <span className="block text-xl font-black text-[#111111]">
             {item.label}
-          </span>
-          <span className="mt-1 line-clamp-1 block text-sm text-[#6f6f6f]">
-            {item.description}
           </span>
         </span>
 
@@ -353,12 +329,6 @@ function MobileMenuItem({
                       className="block rounded-2xl px-3 py-3 text-base font-bold text-[#111111] transition hover:bg-[#fff0ec] hover:text-[#ff5a40]"
                     >
                       {link.label}
-
-                      {link.description ? (
-                        <span className="mt-1 block text-sm font-normal leading-5 text-[#6f6f6f]">
-                          {link.description}
-                        </span>
-                      ) : null}
                     </Link>
                   ))}
                 </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Check,
@@ -43,6 +43,7 @@ export function HeroSearch() {
   const [budget, setBudget] = useState("any");
   const [guests, setGuests] = useState("any");
   const [activeTab, setActiveTab] = useState("Services");
+  const [hoveredTab, setHoveredTab] = useState<string | null>(null);
   const [openFilter, setOpenFilter] = useState<FilterKey>(null);
 
   const activeFilters = activeFilterCount({
@@ -55,6 +56,9 @@ export function HeroSearch() {
   });
 
   const hasActiveSearch = activeFilters > 0;
+
+  const visibleTab = hoveredTab ?? activeTab;
+  const visibleTabIndex = Math.max(tabs.indexOf(visibleTab), 0);
 
   const resultCount = useMemo(() => {
     const locationSearch = normaliseSearchValue(location);
@@ -144,33 +148,42 @@ export function HeroSearch() {
 
       <div className="bg-[#ff5a40]">
         <div className="mx-auto max-w-7xl px-5 pb-10 md:px-8 md:pb-12">
-          <div className="mx-auto grid w-full max-w-xl grid-cols-4 items-center gap-1 pt-5 text-center text-sm font-bold text-white md:flex md:max-w-4xl md:justify-center md:gap-10 md:pt-6 md:text-lg">
-            {tabs.map((tab) => {
-              const isActive = activeTab === tab;
+          <div
+            className="mx-auto grid w-full max-w-xl grid-cols-4 items-center pt-5 text-center text-sm font-bold text-white md:max-w-4xl md:pt-6 md:text-lg"
+            onMouseLeave={() => setHoveredTab(null)}
+          >
+            <div className="relative col-span-4 grid grid-cols-4">
+              <span
+                className="pointer-events-none absolute bottom-0 left-0 h-1 w-1/4 transition-transform duration-300 ease-out"
+                style={{
+                  transform: `translateX(${visibleTabIndex * 100}%)`,
+                }}
+              >
+                <span className="mx-auto block h-1 w-14 rounded-full bg-[#111111] md:w-20" />
+              </span>
 
-              return (
-                <button
-                  key={tab}
-                  type="button"
-                  onClick={() => setActiveTab(tab)}
-                  className={`group relative flex min-w-0 justify-center rounded-2xl px-3 pb-4 pt-3 transition duration-200 hover:bg-white/12 md:px-5 ${
-                    isActive ? "text-white" : "text-white/80 hover:text-white"
-                  }`}
-                >
-                  <span className="truncate transition duration-200 group-hover:-translate-y-0.5">
-                    {tab}
-                  </span>
+              {tabs.map((tab) => {
+                const isActive = activeTab === tab;
+                const isVisible = visibleTab === tab;
 
-                  <span
-                    className={`absolute bottom-0 left-1/2 h-1 -translate-x-1/2 rounded-full transition-all duration-200 ${
-                      isActive
-                        ? "w-14 bg-[#111111] md:w-full"
-                        : "w-0 bg-white/70 group-hover:w-10 md:group-hover:w-12"
+                return (
+                  <button
+                    key={tab}
+                    type="button"
+                    onMouseEnter={() => setHoveredTab(tab)}
+                    onFocus={() => setHoveredTab(tab)}
+                    onClick={() => setActiveTab(tab)}
+                    className={`relative flex min-w-0 justify-center px-3 pb-4 pt-3 transition-colors duration-200 md:px-5 ${
+                      isActive || isVisible
+                        ? "text-white"
+                        : "text-white/80 hover:text-white"
                     }`}
-                  />
-                </button>
-              );
-            })}
+                  >
+                    <span className="truncate">{tab}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <form onSubmit={handleSubmit} className="mx-auto mt-6 max-w-5xl">
@@ -371,240 +384,696 @@ type FilterDropdownProps = {
   onClose: () => void;
 };
 
-function FilterDropdown({
-  label,
-  placeholder,
-  value,
-  options,
-  isOpen,
-  onOpen,
-  onChange,
-  onClose,
-}: FilterDropdownProps) {
+function FilterDropdown(
+  props: FilterDropdownProps & {
+    id?: string;
+    name?: string;
+    filterKey?: string;
+    valueKey?: string;
+    openKey?: string;
+    dropdownKey?: string;
+    queryKey?: string;
+
+    open?: boolean;
+    isOpen?: boolean;
+    active?: boolean;
+    isActive?: boolean;
+
+    openFilter?: string | null;
+    activeFilter?: string | null;
+    selectedFilter?: string | null;
+    currentFilter?: string | null;
+    openDropdown?: string | null;
+    activeDropdown?: string | null;
+
+    setOpenFilter?: (value: string | null) => void;
+    setActiveFilter?: (value: string | null) => void;
+    setSelectedFilter?: (value: string | null) => void;
+    setCurrentFilter?: (value: string | null) => void;
+    setOpenDropdown?: (value: string | null) => void;
+    setActiveDropdown?: (value: string | null) => void;
+
+    onToggle?: () => void;
+    onOpenChange?: (open: boolean) => void;
+    onDropdownChange?: (value: string | null) => void;
+  },
+) {
+  const {
+    label,
+    placeholder,
+    value,
+    options,
+    onChange,
+
+    id,
+    name,
+    filterKey,
+    valueKey,
+    openKey,
+    dropdownKey: providedDropdownKey,
+    queryKey,
+
+    open,
+    isOpen: controlledIsOpen,
+    active,
+    isActive,
+
+    openFilter,
+    activeFilter,
+    selectedFilter,
+    currentFilter,
+    openDropdown,
+    activeDropdown,
+
+    setOpenFilter,
+    setActiveFilter,
+    setSelectedFilter,
+    setCurrentFilter,
+    setOpenDropdown,
+    setActiveDropdown,
+
+    onToggle,
+    onOpenChange,
+    onDropdownChange,
+  } = props;
+
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const [localOpen, setLocalOpen] = useState(false);
+  const [hoveredValue, setHoveredValue] = useState<string | null>(null);
+
+  const dropdownKey =
+    id ??
+    filterKey ??
+    valueKey ??
+    openKey ??
+    providedDropdownKey ??
+    queryKey ??
+    name ??
+    label;
+
+  useEffect(() => {
+    function handleOtherDropdownOpen(event: Event) {
+      const customEvent = event as CustomEvent<string>;
+
+      if (customEvent.detail !== dropdownKey) {
+        setLocalOpen(false);
+        setHoveredValue(null);
+      }
+    }
+
+    window.addEventListener(
+      "occasions-home-filter-open",
+      handleOtherDropdownOpen,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "occasions-home-filter-open",
+        handleOtherDropdownOpen,
+      );
+    };
+  }, [dropdownKey]);
+
+  const controlledOpen =
+    typeof controlledIsOpen === "boolean"
+      ? controlledIsOpen
+      : typeof open === "boolean"
+        ? open
+        : typeof active === "boolean"
+          ? active
+          : typeof isActive === "boolean"
+            ? isActive
+            : undefined;
+
+  const linkedStateValue =
+    openFilter ??
+    activeFilter ??
+    selectedFilter ??
+    currentFilter ??
+    openDropdown ??
+    activeDropdown;
+
+  const hasLinkedState =
+    typeof linkedStateValue !== "undefined" &&
+    (typeof setOpenFilter === "function" ||
+      typeof setActiveFilter === "function" ||
+      typeof setSelectedFilter === "function" ||
+      typeof setCurrentFilter === "function" ||
+      typeof setOpenDropdown === "function" ||
+      typeof setActiveDropdown === "function" ||
+      typeof onDropdownChange === "function");
+
+  const hasControlledHandler =
+    typeof onOpenChange === "function" || typeof onToggle === "function";
+
+  const isOpen =
+    typeof controlledOpen === "boolean" && hasControlledHandler
+      ? controlledOpen
+      : hasLinkedState
+        ? linkedStateValue === dropdownKey
+        : localOpen;
+
   const activeOption = options.find((option) => option.value === value);
-  const displayValue = value === "any" ? placeholder : activeOption?.label;
+  const displayValue =
+    value === "any" ? placeholder : activeOption?.label ?? placeholder;
+
+  const activeValue = hoveredValue ?? value;
+  const activeIndex = Math.max(
+    options.findIndex((option) => option.value === activeValue),
+    0,
+  );
+
+  function announceOpen() {
+    window.dispatchEvent(
+      new CustomEvent("occasions-home-filter-open", {
+        detail: dropdownKey,
+      }),
+    );
+  }
+
+  function setDropdownOpen(nextOpen: boolean) {
+    setHoveredValue(null);
+
+    if (nextOpen) {
+      announceOpen();
+    }
+
+    if (typeof onOpenChange === "function") {
+      onOpenChange(nextOpen);
+      return;
+    }
+
+    if (typeof onDropdownChange === "function") {
+      onDropdownChange(nextOpen ? dropdownKey : null);
+      return;
+    }
+
+    if (typeof setOpenFilter === "function") {
+      setOpenFilter(nextOpen ? dropdownKey : null);
+      return;
+    }
+
+    if (typeof setActiveFilter === "function") {
+      setActiveFilter(nextOpen ? dropdownKey : null);
+      return;
+    }
+
+    if (typeof setSelectedFilter === "function") {
+      setSelectedFilter(nextOpen ? dropdownKey : null);
+      return;
+    }
+
+    if (typeof setCurrentFilter === "function") {
+      setCurrentFilter(nextOpen ? dropdownKey : null);
+      return;
+    }
+
+    if (typeof setOpenDropdown === "function") {
+      setOpenDropdown(nextOpen ? dropdownKey : null);
+      return;
+    }
+
+    if (typeof setActiveDropdown === "function") {
+      setActiveDropdown(nextOpen ? dropdownKey : null);
+      return;
+    }
+
+    if (typeof onToggle === "function" && typeof controlledOpen === "boolean") {
+      onToggle();
+      return;
+    }
+
+    setLocalOpen(nextOpen);
+  }
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    function handlePointerDown(event: MouseEvent | TouchEvent) {
+      const target = event.target as Node | null;
+
+      if (!target || !dropdownRef.current) return;
+
+      if (!dropdownRef.current.contains(target)) {
+        setDropdownOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("touchstart", handlePointerDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("touchstart", handlePointerDown);
+    };
+    // setDropdownOpen intentionally stays outside dependencies because it manages several optional controlled/uncontrolled dropdown modes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
+
+  function handleSelect(nextValue: string) {
+    onChange(nextValue);
+    setHoveredValue(null);
+  }
 
   return (
-    <div className="relative">
+    <div ref={dropdownRef} className="relative">
       <button
         type="button"
-        onClick={onOpen}
-        className="flex min-h-[74px] w-full items-center justify-between rounded-2xl border border-white/30 bg-white/10 px-5 text-left text-white backdrop-blur-sm transition hover:bg-white/15"
+        onClick={() => setDropdownOpen(!isOpen)}
+        className={`flex min-h-[76px] w-full items-center justify-between gap-4 rounded-[18px] border px-5 text-left transition ${
+          isOpen
+            ? "border-white bg-white text-[#111111] shadow-[0_20px_60px_rgba(17,17,17,0.14)]"
+            : "border-white/30 bg-white/10 text-white hover:bg-white/15"
+        }`}
       >
-        <span className="min-w-0 flex-1 pr-4">
-          <span className="block text-xs font-bold uppercase tracking-[0.14em] text-white/70">
+        <span className="min-w-0">
+          <span
+            className={`mb-1 block text-[11px] font-black uppercase tracking-[0.28em] ${
+              isOpen ? "text-[#8a8a8a]" : "text-white/80"
+            }`}
+          >
             {label}
           </span>
 
-          <span
-            className={`mt-1 block truncate text-base font-semibold ${
-              value === "any" ? "text-white/75" : "text-white"
-            }`}
-          >
+          <span className="block truncate text-sm font-black md:text-[15px]">
             {displayValue}
           </span>
         </span>
 
         <ChevronDown
           size={18}
-          className={`shrink-0 transition ${isOpen ? "rotate-180" : ""}`}
+          className={`shrink-0 transition duration-300 ${
+            isOpen ? "rotate-180 text-[#ff5a40]" : "text-white"
+          }`}
         />
       </button>
 
       {isOpen ? (
-        <div className="absolute left-0 top-[calc(100%+10px)] z-50 w-full min-w-[280px] overflow-hidden rounded-2xl border border-[#deded9] bg-white shadow-[0_24px_70px_rgba(17,17,17,0.22)]">
-          <div className="border-b border-[#eeeeea] bg-[#f6f6f4] px-5 py-4">
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-[#8a8a8a]">
-              {label}
-            </p>
+        <div className="absolute left-0 top-[calc(100%+10px)] z-50 w-[310px] overflow-hidden rounded-[24px] border border-[#deded9] bg-white p-2 text-[#111111] shadow-[0_28px_80px_rgba(17,17,17,0.22)]">
+          <div className="px-3 pb-3 pt-2 text-[11px] font-black uppercase tracking-[0.26em] text-[#8a8a8a]">
+            {label}
           </div>
 
-          <div className="max-h-[330px] overflow-y-auto p-2">
+          <div className="relative" onMouseLeave={() => setHoveredValue(null)}>
+            <div
+              className="pointer-events-none absolute left-0 top-0 h-12 w-full rounded-[16px] bg-[#111111] transition-transform duration-300 ease-out"
+              style={{
+                transform: `translateY(${activeIndex * 3}rem)`,
+              }}
+            />
+
             {options.map((option) => {
-              const isActive = option.value === value;
+              const isSelected = option.value === value;
+              const isActive = option.value === activeValue;
 
               return (
                 <button
                   key={option.value}
                   type="button"
-                  onClick={() => onChange(option.value)}
-                  className={`flex min-h-12 w-full items-center gap-3 rounded-xl px-4 text-left text-sm font-bold transition ${
-                    isActive
-                      ? "bg-[#111111] text-white"
-                      : "text-[#111111] hover:bg-[#fff0ec]"
+                  onMouseEnter={() => setHoveredValue(option.value)}
+                  onFocus={() => setHoveredValue(option.value)}
+                  onClick={() => handleSelect(option.value)}
+                  className={`relative z-10 flex min-h-12 w-full items-center gap-4 rounded-[16px] px-3 text-left text-sm font-bold transition-colors duration-200 ${
+                    isActive ? "text-white" : "text-[#111111]"
                   }`}
                 >
                   <span
-                    className={`flex h-5 w-5 items-center justify-center rounded-md border ${
-                      isActive
-                        ? "border-white bg-white text-[#111111]"
-                        : "border-[#deded9] bg-white"
+                    className={`flex size-5 shrink-0 items-center justify-center rounded-md border transition-colors duration-200 ${
+                      isSelected
+                        ? isActive
+                          ? "border-white bg-white text-[#111111]"
+                          : "border-[#111111] bg-[#111111] text-white"
+                        : isActive
+                          ? "border-white/45 bg-white/10 text-transparent"
+                          : "border-[#deded9] bg-white text-transparent"
                     }`}
                   >
-                    {isActive ? <Check size={14} /> : null}
+                    <Check size={14} strokeWidth={3} />
                   </span>
 
-                  {option.label}
+                  <span>{option.label}</span>
                 </button>
               );
             })}
           </div>
 
-          <div className="border-t border-[#eeeeea] p-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="min-h-12 w-full rounded-xl bg-[#ff5a40] px-5 text-sm font-black text-white transition hover:bg-[#ed422b]"
-            >
-              Done
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => setDropdownOpen(false)}
+            className="mt-3 min-h-12 w-full rounded-[16px] bg-[#ff5a40] px-5 text-sm font-black text-white transition hover:bg-[#ed422b]"
+          >
+            Done
+          </button>
         </div>
       ) : null}
     </div>
   );
 }
 
-type MoreFiltersModalProps = {
-  resultCount: number;
-  serviceType: string;
-  eventType: string;
-  budget: string;
-  guests: string;
-  onServiceTypeChange: (value: string) => void;
-  onEventTypeChange: (value: string) => void;
-  onBudgetChange: (value: string) => void;
-  onGuestsChange: (value: string) => void;
-  onClose: () => void;
-  onClear: () => void;
-};
+function FilterModalOptionGroup({
+  title,
+  value,
+  options,
+  onSelect,
+}: {
+  title: string;
+  value: string;
+  options: { label: string; value: string }[];
+  onSelect: (value: string) => void;
+}) {
+  const [hoveredValue, setHoveredValue] = useState<string | null>(null);
 
-function MoreFiltersModal({
-  resultCount,
-  serviceType,
-  eventType,
-  budget,
-  guests,
-  onServiceTypeChange,
-  onEventTypeChange,
-  onBudgetChange,
-  onGuestsChange,
-  onClose,
-  onClear,
-}: MoreFiltersModalProps) {
+  const activeValue = hoveredValue ?? value;
+  const activeIndex = Math.max(
+    options.findIndex((option) => option.value === activeValue),
+    0,
+  );
+
   return (
-    <div className="fixed inset-0 z-[80] flex items-start justify-center bg-black/50 px-4 py-8 backdrop-blur-sm md:items-center">
-      <div className="w-full max-w-3xl overflow-hidden rounded-3xl bg-white shadow-[0_30px_100px_rgba(0,0,0,0.35)]">
-        <div className="flex items-center justify-between border-b border-[#eeeeea] px-6 py-5">
-          <h3 className="text-2xl font-black text-[#111111]">Filters</h3>
+    <div>
+      <p className="mb-3 text-xs font-black text-[#111111]">{title}</p>
+
+      <div className="relative space-y-2" onMouseLeave={() => setHoveredValue(null)}>
+        <div
+          className="pointer-events-none absolute left-0 top-0 h-12 w-full rounded-[14px] bg-[#111111] transition-transform duration-300 ease-out"
+          style={{
+            transform: `translateY(${activeIndex * 3.5}rem)`,
+          }}
+        />
+
+        {options.map((option) => {
+          const isSelected = option.value === value;
+          const isActive = option.value === activeValue;
+
+          return (
+            <button
+              key={option.value}
+              type="button"
+              onMouseEnter={() => setHoveredValue(option.value)}
+              onFocus={() => setHoveredValue(option.value)}
+              onClick={() => onSelect(option.value)}
+              className={`relative z-10 flex min-h-12 w-full items-center justify-between gap-3 rounded-[14px] border px-4 text-left text-sm font-semibold transition-colors duration-200 ${
+                isActive
+                  ? "border-[#111111] text-white"
+                  : "border-[#e7e2dd] text-[#111111]"
+              }`}
+            >
+              <span>{option.label}</span>
+
+              <span
+                className={`flex size-5 shrink-0 items-center justify-center rounded-md border transition-colors duration-200 ${
+                  isSelected
+                    ? isActive
+                      ? "border-white bg-white text-[#111111]"
+                      : "border-[#111111] bg-[#111111] text-white"
+                    : isActive
+                      ? "border-white/45 bg-white/10 text-transparent"
+                      : "border-[#deded9] bg-white text-transparent"
+                }`}
+              >
+                <Check size={13} strokeWidth={3} />
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function MoreFiltersModal(props: Record<string, unknown>) {
+  type StringSetter = (value: string) => void;
+  type BooleanSetter = (value: boolean) => void;
+
+  function getStringValue(keys: string[], fallback: string) {
+    for (const key of keys) {
+      const value = props[key];
+
+      if (typeof value === "string") {
+        return value;
+      }
+    }
+
+    return fallback;
+  }
+
+  function getBooleanValue(keys: string[], fallback: boolean) {
+    for (const key of keys) {
+      const value = props[key];
+
+      if (typeof value === "boolean") {
+        return value;
+      }
+    }
+
+    return fallback;
+  }
+
+  function callStringSetter(keys: string[], nextValue: string) {
+    for (const key of keys) {
+      const setter = props[key];
+
+      if (typeof setter === "function") {
+        (setter as StringSetter)(nextValue);
+        return;
+      }
+    }
+  }
+
+  function closeModal() {
+    const closeKeys = [
+      "onClose",
+      "close",
+      "onDismiss",
+      "onDone",
+      "onApply",
+      "handleClose",
+      "handleFiltersClose",
+    ];
+
+    for (const key of closeKeys) {
+      const closeFunction = props[key];
+
+      if (typeof closeFunction === "function") {
+        (closeFunction as () => void)();
+        return;
+      }
+    }
+
+    const booleanSetterKeys = [
+      "setIsOpen",
+      "setOpen",
+      "setShow",
+      "setVisible",
+      "setFiltersOpen",
+      "setIsFiltersOpen",
+      "setFilterModalOpen",
+      "setIsFilterModalOpen",
+      "setShowFilters",
+    ];
+
+    for (const key of booleanSetterKeys) {
+      const setter = props[key];
+
+      if (typeof setter === "function") {
+        (setter as BooleanSetter)(false);
+        return;
+      }
+    }
+  }
+
+  function clearAll() {
+    callStringSetter(
+      ["setServiceType", "onServiceTypeChange", "setService", "onServiceChange"],
+      "any",
+    );
+
+    callStringSetter(
+      ["setEventType", "onEventTypeChange", "setEvent", "onEventChange"],
+      "any",
+    );
+
+    callStringSetter(
+      ["setBudget", "onBudgetChange", "setEstimatedBudget"],
+      "any",
+    );
+
+    callStringSetter(
+      ["setGuests", "onGuestsChange", "setGuestCount", "onGuestCountChange"],
+      "any",
+    );
+  }
+
+  const isOpen = getBooleanValue(
+    ["isOpen", "open", "show", "visible", "isFiltersOpen", "isFilterModalOpen"],
+    true,
+  );
+
+  if (!isOpen) return null;
+
+  const serviceValue = getStringValue(
+    ["serviceType", "selectedServiceType", "service", "selectedService"],
+    "any",
+  );
+
+  const eventValue = getStringValue(
+    ["eventType", "selectedEventType", "event", "selectedEvent"],
+    "any",
+  );
+
+  const budgetValue = getStringValue(
+    ["budget", "selectedBudget", "estimatedBudget"],
+    "any",
+  );
+
+  const guestsValue = getStringValue(
+    ["guests", "guestCount", "selectedGuests", "selectedGuestCount"],
+    "any",
+  );
+
+  const modalServiceOptions = [
+    { label: "Any service type", value: "any" },
+    { label: "Catering", value: "catering" },
+    { label: "Tents", value: "tents" },
+    { label: "Chairs & Tables", value: "chairs-tables" },
+    { label: "Mobile Toilets", value: "mobile-toilets" },
+    { label: "Mobile Fridges", value: "mobile-fridges" },
+    { label: "Décor", value: "decor" },
+    { label: "Sound & DJ", value: "sound-dj" },
+    { label: "Photography", value: "photography" },
+    { label: "Venues", value: "venues" },
+    { label: "Generators", value: "generators" },
+  ];
+
+  const modalEventOptions = [
+    { label: "Any event type", value: "any" },
+    { label: "Funeral", value: "funeral" },
+    { label: "Wedding", value: "wedding" },
+    { label: "Birthday Party", value: "birthday-party" },
+    { label: "Church Event", value: "church-event" },
+    { label: "Traditional Ceremony", value: "traditional-ceremony" },
+    { label: "Corporate Function", value: "corporate-function" },
+    { label: "Graduation", value: "graduation" },
+    { label: "Baby Shower", value: "baby-shower" },
+    { label: "School Event", value: "school-event" },
+  ];
+
+  const modalBudgetOptions = [
+    { label: "Any budget", value: "any" },
+    { label: "Under R5,000", value: "under-5000" },
+    { label: "R5,000 - R15,000", value: "5000-15000" },
+    { label: "R15,000 - R40,000", value: "15000-40000" },
+    { label: "R40,000+", value: "40000-plus" },
+  ];
+
+  const modalGuestOptions = [
+    { label: "Any guest count", value: "any" },
+    { label: "Under 50 guests", value: "under-50" },
+    { label: "50 - 150 guests", value: "50-150" },
+    { label: "150 - 300 guests", value: "150-300" },
+    { label: "300+ guests", value: "300-plus" },
+  ];
+
+  const sections = [
+    {
+      title: "Service Type",
+      value: serviceValue,
+      options: modalServiceOptions,
+      onSelect: (nextValue: string) =>
+        callStringSetter(
+          ["setServiceType", "onServiceTypeChange", "setService", "onServiceChange"],
+          nextValue,
+        ),
+    },
+    {
+      title: "Event Type",
+      value: eventValue,
+      options: modalEventOptions,
+      onSelect: (nextValue: string) =>
+        callStringSetter(
+          ["setEventType", "onEventTypeChange", "setEvent", "onEventChange"],
+          nextValue,
+        ),
+    },
+    {
+      title: "Estimated Budget",
+      value: budgetValue,
+      options: modalBudgetOptions,
+      onSelect: (nextValue: string) =>
+        callStringSetter(
+          ["setBudget", "onBudgetChange", "setEstimatedBudget"],
+          nextValue,
+        ),
+    },
+    {
+      title: "Guest Count",
+      value: guestsValue,
+      options: modalGuestOptions,
+      onSelect: (nextValue: string) =>
+        callStringSetter(
+          ["setGuests", "onGuestsChange", "setGuestCount", "onGuestCountChange"],
+          nextValue,
+        ),
+    },
+  ];
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-start justify-center bg-black/45 px-4 py-8 backdrop-blur-md">
+      <div className="max-h-[92vh] w-full max-w-4xl overflow-hidden rounded-[28px] bg-white shadow-[0_32px_100px_rgba(17,17,17,0.35)]">
+        <div className="flex items-center justify-between border-b border-[#eee8e3] px-7 py-5">
+          <h2 className="text-xl font-black text-[#111111]">Filters</h2>
 
           <button
             type="button"
-            onClick={onClose}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f6f6f4] text-[#111111]"
+            onClick={closeModal}
+            className="flex size-10 items-center justify-center rounded-full bg-[#f4f1ee] text-[#111111] transition hover:bg-[#111111] hover:text-white"
+            aria-label="Close filters"
           >
-            <X size={22} />
+            <X size={20} />
           </button>
         </div>
 
-        <div className="bg-[#ff5a40] px-6 py-6">
-          <div className="flex min-h-14 items-center gap-3 rounded-2xl bg-white px-4">
-            <Search size={22} className="text-[#111111]" />
-            <span className="text-sm font-semibold text-[#8a8a8a]">
+        <div className="bg-[#ff5a40] px-7 py-6">
+          <div className="flex min-h-14 items-center gap-3 rounded-[16px] bg-white px-5 text-[#111111]">
+            <Search size={20} className="shrink-0" />
+
+            <p className="text-sm font-bold text-[#8a8a8a]">
               Refine providers by service, occasion, budget and guest count
-            </span>
+            </p>
           </div>
         </div>
 
-        <div className="grid max-h-[65vh] gap-6 overflow-y-auto p-6 md:grid-cols-2">
-          <ModalSelect
-            label="Service Type"
-            value={serviceType}
-            options={serviceTypeOptions}
-            onChange={onServiceTypeChange}
-          />
-
-          <ModalSelect
-            label="Event Type"
-            value={eventType}
-            options={eventTypeOptions}
-            onChange={onEventTypeChange}
-          />
-
-          <ModalSelect
-            label="Estimated Budget"
-            value={budget}
-            options={budgetOptions}
-            onChange={onBudgetChange}
-          />
-
-          <ModalSelect
-            label="Guest Count"
-            value={guests}
-            options={guestOptions}
-            onChange={onGuestsChange}
-          />
+        <div className="max-h-[58vh] overflow-y-auto px-7 py-6">
+          <div className="grid gap-7 md:grid-cols-2">
+            {sections.map((section) => (
+              <FilterModalOptionGroup
+                key={section.title}
+                title={section.title}
+                value={section.value}
+                options={section.options}
+                onSelect={section.onSelect}
+              />
+            ))}
+          </div>
         </div>
 
-        <div className="flex flex-col gap-3 border-t border-[#eeeeea] p-6 md:flex-row md:items-center md:justify-between">
+        <div className="flex items-center justify-between border-t border-[#eee8e3] bg-white px-7 py-5">
           <button
             type="button"
-            onClick={onClear}
-            className="min-h-12 rounded-xl px-5 text-sm font-black text-[#111111]"
+            onClick={clearAll}
+            className="text-sm font-bold text-[#111111] transition hover:text-[#ff5a40]"
           >
             Clear All
           </button>
 
           <button
             type="button"
-            onClick={onClose}
-            className="min-h-14 rounded-xl bg-[#ff5a40] px-8 text-base font-black text-white transition hover:bg-[#ed422b]"
+            onClick={closeModal}
+            className="min-h-14 rounded-[16px] bg-[#ff5a40] px-8 text-sm font-black text-white transition hover:bg-[#ed422b]"
           >
-            {resultCount === 1
-              ? "Show 1 Provider"
-              : `Show ${resultCount} Providers`}
+            Show Providers
           </button>
         </div>
-      </div>
-    </div>
-  );
-}
-
-function ModalSelect({
-  label,
-  value,
-  options,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  options: FilterOption[];
-  onChange: (value: string) => void;
-}) {
-  return (
-    <div>
-      <p className="mb-3 text-sm font-black text-[#111111]">{label}</p>
-
-      <div className="grid gap-2">
-        {options.map((option) => {
-          const isActive = option.value === value;
-
-          return (
-            <button
-              key={option.value}
-              type="button"
-              onClick={() => onChange(option.value)}
-              className={`flex min-h-12 items-center justify-between rounded-xl border px-4 text-left text-sm font-bold transition ${
-                isActive
-                  ? "border-[#111111] bg-[#111111] text-white"
-                  : "border-[#deded9] bg-white text-[#111111] hover:border-[#ff5a40]"
-              }`}
-            >
-              {option.label}
-              {isActive ? <Check size={16} /> : null}
-            </button>
-          );
-        })}
       </div>
     </div>
   );
