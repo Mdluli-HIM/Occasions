@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -235,6 +235,35 @@ function ImageLightbox({
 }) {
   const safeIndex = Math.min(Math.max(currentIndex, 0), images.length - 1);
   const currentImage = images[safeIndex];
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
+
+  function handleTouchStart(event: React.TouchEvent<HTMLDivElement>) {
+    touchStartX.current = event.touches[0]?.clientX ?? null;
+    touchEndX.current = null;
+  }
+
+  function handleTouchMove(event: React.TouchEvent<HTMLDivElement>) {
+    touchEndX.current = event.touches[0]?.clientX ?? null;
+  }
+
+  function handleTouchEnd() {
+    if (touchStartX.current === null || touchEndX.current === null) return;
+
+    const distance = touchStartX.current - touchEndX.current;
+    const minimumSwipeDistance = 45;
+
+    if (distance > minimumSwipeDistance) {
+      goToNext();
+    }
+
+    if (distance < -minimumSwipeDistance) {
+      goToPrevious();
+    }
+
+    touchStartX.current = null;
+    touchEndX.current = null;
+  }
 
   function goToPrevious() {
     const nextIndex = safeIndex === 0 ? images.length - 1 : safeIndex - 1;
@@ -301,25 +330,36 @@ function ImageLightbox({
           </button>
         </div>
 
-        <div className="relative flex flex-1 items-center justify-center px-5 py-6 md:px-20">
+        <div
+          className="relative flex flex-1 touch-pan-y items-center justify-center px-0 py-5 md:px-20 md:py-6"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
           <button
             type="button"
             onClick={goToPrevious}
-            className="absolute left-5 top-1/2 z-10 flex size-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur transition hover:bg-[#ff5a40] md:left-8"
+            className="absolute left-5 top-1/2 z-10 hidden size-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur transition hover:bg-[#ff5a40] md:left-8 md:flex"
             aria-label="Previous image"
           >
             <ChevronLeft size={28} />
           </button>
 
-          <div
-            className="h-[68vh] w-full max-w-6xl rounded-[26px] bg-contain bg-center bg-no-repeat"
-            style={{ backgroundImage: `url(${currentImage})` }}
-          />
+          <div className="flex w-full flex-col items-center gap-4 px-4">
+            <div
+              className="h-[62vh] w-full max-w-6xl rounded-[22px] bg-contain bg-center bg-no-repeat md:h-[68vh] md:rounded-[26px]"
+              style={{ backgroundImage: `url(${currentImage})` }}
+            />
+
+            <p className="text-center text-xs font-bold uppercase tracking-[0.18em] text-white/45 md:hidden">
+              Swipe left or right
+            </p>
+          </div>
 
           <button
             type="button"
             onClick={goToNext}
-            className="absolute right-5 top-1/2 z-10 flex size-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur transition hover:bg-[#ff5a40] md:right-8"
+            className="absolute right-5 top-1/2 z-10 hidden size-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur transition hover:bg-[#ff5a40] md:right-8 md:flex"
             aria-label="Next image"
           >
             <ChevronRight size={28} />
