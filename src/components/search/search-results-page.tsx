@@ -440,9 +440,10 @@ function ProviderResultCard({
   onSave: () => void;
 }) {
   const router = useRouter();
+  const href = `/providers/${provider.id}`;
 
-  function openListing() {
-    router.push(`/providers/${provider.id}`);
+  function openProvider() {
+    router.push(href);
   }
 
   const listingStatus =
@@ -454,92 +455,83 @@ function ProviderResultCard({
 
   return (
     <article
-      onClick={openListing}
       role="link"
       tabIndex={0}
+      onClick={openProvider}
       onKeyDown={(event) => {
-        if (event.key === "Enter") {
-          openListing();
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openProvider();
         }
       }}
-      className="group cursor-pointer overflow-hidden rounded-[18px] border border-[#deded9] bg-white shadow-sm transition-all duration-500 hover:border-[#cfcfc8] hover:shadow-[0_18px_45px_rgba(17,17,17,0.08)] md:grid md:grid-cols-[360px_1fr] md:items-stretch"
+      className="group grid cursor-pointer overflow-hidden rounded-[24px] border border-[#deded9] bg-white shadow-[0_8px_24px_rgba(17,17,17,0.06)] transition duration-300 hover:-translate-y-0.5 hover:border-[#ff5a40] hover:shadow-[0_20px_45px_rgba(17,17,17,0.12)] md:grid-cols-[360px_minmax(0,1fr)]"
+      aria-label={`Open ${provider.name}`}
     >
-      <div className="relative h-[310px] overflow-hidden bg-[#f2f2f0] md:h-full md:min-h-[360px]">
+      <div className="relative min-h-[260px] overflow-hidden bg-[#deded9] md:min-h-full">
         <div
-          className="absolute inset-0 bg-cover bg-center transition-transform duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.035]"
+          className="absolute inset-0 bg-cover bg-center transition duration-[1200ms] group-hover:scale-[1.045]"
           style={{ backgroundImage: `url(${provider.image})` }}
         />
       </div>
 
-      <div className="relative min-h-[360px] p-6 md:p-7">
+      <div className="relative p-6 md:p-8">
         <button
           type="button"
           onClick={(event) => {
             event.stopPropagation();
             onSave();
           }}
-          className={`absolute right-5 top-5 flex h-12 w-12 items-center justify-center rounded-2xl border transition ${
+          className={`absolute right-5 top-5 flex size-12 items-center justify-center rounded-[16px] border transition ${
             isSaved
               ? "border-[#ff5a40] bg-[#ff5a40] text-white"
               : "border-[#deded9] bg-white text-[#ff5a40] hover:border-[#ff5a40] hover:bg-[#fff0ec]"
           }`}
-          aria-label="Save provider"
+          aria-label={`Save ${provider.name}`}
         >
-          <Heart size={22} className={isSaved ? "fill-white" : ""} />
+          <Heart size={21} className={isSaved ? "fill-white" : ""} />
         </button>
 
-        <div className="pr-16">
-          <div className="flex flex-wrap items-end gap-2">
-            <h2 className="text-4xl font-black tracking-tight text-[#10202b]">
-              {provider.priceFrom}
-            </h2>
-
-            <span className="pb-1 text-base font-black text-[#10202b]">
-              estimate
-            </span>
-          </div>
-
-          <p className="mt-3 text-xl font-semibold text-[#10202b]">
-            {provider.name}
+        <div className="pr-14">
+          <p className="text-3xl font-black tracking-tight text-[#111111] md:text-4xl">
+            {provider.priceFrom}{" "}
+            <span className="text-base font-black text-[#6b7280]">estimate</span>
           </p>
 
-          <p className="mt-1 text-base font-black text-[#10202b]">
+          <h2 className="mt-4 text-2xl font-black text-[#111111]">
+            {provider.name}
+          </h2>
+
+          <p className="mt-1 text-base font-black text-[#111111]">
             {provider.area}
           </p>
-        </div>
 
-        <div className="mt-5 flex flex-wrap items-center gap-5 text-base text-[#10202b]">
-          <span className="flex items-center gap-2 font-black">
-            <Star size={20} className="fill-[#ffb703] text-[#ffb703]" />
-            {provider.rating}
-          </span>
+          <div className="mt-5 flex flex-wrap items-center gap-4 text-sm font-black text-[#6b7280]">
+            <span className="inline-flex items-center gap-2 text-[#111111]">
+              <Star size={18} className="fill-[#ff5a40] text-[#ff5a40]" />
+              {provider.rating}
+            </span>
 
-          <span className="font-semibold text-[#607080]">
-            {provider.reviews} reviews
-          </span>
+            <span>{provider.reviews} reviews</span>
 
-          <span className="font-semibold text-[#607080]">
-            {provider.eventTypes[0]}
-          </span>
-        </div>
-
-        <p className="mt-5 text-base font-black leading-7 text-[#10202b]">
-          {provider.services.join(", ")}
-        </p>
-
-        <p className="mt-3 line-clamp-2 text-base leading-7 text-[#10202b]">
-          {provider.description}
-        </p>
-
-        <div className="mt-7 flex items-center justify-between gap-5 border-t border-[#ece7e2] pt-5">
-          <div className="flex items-center gap-2 text-sm font-semibold text-[#607080]">
-            <MapPin size={18} />
-            {provider.location}
+            <span>{provider.eventTypes[0]}</span>
           </div>
 
-          <span className="text-sm font-semibold text-[#607080]">
-            {listingStatus}
+          <p className="mt-6 text-base font-black leading-7 text-[#111111]">
+            {provider.services.join(", ")}
+          </p>
+
+          <p className="mt-4 line-clamp-2 text-base leading-7 text-[#343434]">
+            {provider.description}
+          </p>
+        </div>
+
+        <div className="mt-7 flex items-center justify-between border-t border-[#eee8e3] pt-5 text-sm font-black text-[#6b7280]">
+          <span className="inline-flex items-center gap-2">
+            <MapPin size={17} />
+            {provider.location}
           </span>
+
+          <span className="text-[#ff5a40]">{listingStatus}</span>
         </div>
       </div>
     </article>

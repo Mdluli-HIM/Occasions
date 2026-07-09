@@ -1,6 +1,6 @@
 "use client";
 
-import type { FormEvent, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
@@ -17,6 +17,7 @@ import {
   ImageIcon,
   Mail,
   MapPin,
+  MessageCircle,
   Phone,
   Printer,
   Share2,
@@ -27,14 +28,11 @@ import {
   X,
 } from "lucide-react";
 import type { ProviderDetail } from "@/data/provider-details";
-import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 
 export function ProviderDetailPage({ provider }: { provider: ProviderDetail }) {
   const [activeImage, setActiveImage] = useState(provider.images[0]);
   const [saved, setSaved] = useState(false);
-  const [openSection, setOpenSection] = useState(
-    provider.overview[0]?.title ?? "",
-  );
+  const [openSection, setOpenSection] = useState(provider.overview[0]?.title ?? "");
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [galleryIndex, setGalleryIndex] = useState(0);
 
@@ -48,18 +46,13 @@ export function ProviderDetailPage({ provider }: { provider: ProviderDetail }) {
     <main className="min-h-screen bg-[#f6f6f4] text-[#111111]">
       <header className="sticky top-0 z-50 border-b border-[#ece7e2] bg-white/95 backdrop-blur-md">
         <div className="mx-auto flex min-h-20 max-w-7xl items-center justify-between gap-5 px-5 md:px-8">
-          <Link
-            href="/"
-            className="text-3xl font-black tracking-tight !text-[#ff5a40]"
-          >
+          <Link href="/" className="text-3xl font-black tracking-tight !text-[#ff5a40]">
             Occasions
           </Link>
 
           <div className="hidden min-w-0 flex-1 border-l border-[#deded9] pl-6 md:block">
             <p className="truncate text-base font-black">{provider.name}</p>
-            <p className="text-sm font-bold text-[#6b7280]">
-              {provider.priceLabel}
-            </p>
+            <p className="text-sm font-bold text-[#6b7280]">{provider.priceLabel}</p>
           </div>
 
           <div className="flex items-center gap-3">
@@ -84,10 +77,7 @@ export function ProviderDetailPage({ provider }: { provider: ProviderDetail }) {
 
       <section className="border-y border-[#ed422b] bg-[#ff5a40] px-5 py-4 text-white">
         <div className="mx-auto flex max-w-7xl items-center gap-2 text-sm font-bold">
-          <Link
-            href="/search"
-            className="inline-flex items-center gap-2 hover:text-white/80"
-          >
+          <Link href="/search" className="inline-flex items-center gap-2 hover:text-white/80">
             <ArrowLeft size={16} />
             Back to results
           </Link>
@@ -119,11 +109,7 @@ export function ProviderDetailPage({ provider }: { provider: ProviderDetail }) {
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
           <div className="space-y-6">
-            <SummaryCard
-              provider={provider}
-              saved={saved}
-              onSave={() => setSaved((value) => !value)}
-            />
+            <SummaryCard provider={provider} saved={saved} onSave={() => setSaved((value) => !value)} />
             <AboutCard provider={provider} />
             <PillCard title="Services offered" items={provider.services} />
             <PillCard title="Occasions supported" items={provider.eventTypes} />
@@ -451,14 +437,10 @@ function SummaryCard({
         <div>
           <p className="text-4xl font-black tracking-tight">
             {provider.priceLabel}{" "}
-            <span className="text-base font-black text-[#6b7280]">
-              {provider.priceNote}
-            </span>
+            <span className="text-base font-black text-[#6b7280]">{provider.priceNote}</span>
           </p>
 
-          <h1 className="mt-5 text-3xl font-black tracking-tight">
-            {provider.name}
-          </h1>
+          <h1 className="mt-5 text-3xl font-black tracking-tight">{provider.name}</h1>
 
           <div className="mt-3 flex flex-wrap items-center gap-3 text-sm font-bold text-[#6b7280]">
             <span className="inline-flex items-center gap-2 text-[#111111]">
@@ -494,26 +476,10 @@ function SummaryCard({
       </div>
 
       <div className="mt-7 grid gap-3 border-t border-[#ece7e2] pt-6 sm:grid-cols-4">
-        <Stat
-          icon={<Users size={20} />}
-          label="Capacity"
-          value={provider.capacity}
-        />
-        <Stat
-          icon={<Clock size={20} />}
-          label="Response"
-          value={provider.responseTime}
-        />
-        <Stat
-          icon={<Check size={20} />}
-          label="Experience"
-          value={provider.yearsExperience}
-        />
-        <Stat
-          icon={<ShieldCheck size={20} />}
-          label="Status"
-          value={provider.promoted ? "Promoted" : "Listed"}
-        />
+        <Stat icon={<Users size={20} />} label="Capacity" value={provider.capacity} />
+        <Stat icon={<Clock size={20} />} label="Response" value={provider.responseTime} />
+        <Stat icon={<Check size={20} />} label="Experience" value={provider.yearsExperience} />
+        <Stat icon={<ShieldCheck size={20} />} label="Status" value={provider.promoted ? "Promoted" : "Listed"} />
       </div>
     </section>
   );
@@ -530,21 +496,11 @@ function IconButton({ icon }: { icon: ReactNode }) {
   );
 }
 
-function Stat({
-  icon,
-  label,
-  value,
-}: {
-  icon: ReactNode;
-  label: string;
-  value: string;
-}) {
+function Stat({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
     <div className="rounded-[18px] bg-[#f6f6f4] p-4">
       <div className="mb-3 text-[#ff5a40]">{icon}</div>
-      <p className="text-xs font-black uppercase tracking-[0.16em] text-[#8a8a8a]">
-        {label}
-      </p>
+      <p className="text-xs font-black uppercase tracking-[0.16em] text-[#8a8a8a]">{label}</p>
       <p className="mt-1 text-sm font-black">{value}</p>
     </div>
   );
@@ -603,7 +559,7 @@ function QuickQuestions() {
     "Can you support my guest count?",
     "What is included in the quote?",
     "Do you serve my area?",
-    "How soon can you confirm availability?",
+    "How soon can you confirm availability?"
   ];
 
   return (
@@ -630,11 +586,7 @@ function ImageGrid({ images }: { images: string[] }) {
     <section className="rounded-[24px] border border-[#deded9] bg-white p-3 shadow-sm">
       <div className="grid gap-1 overflow-hidden rounded-[18px] md:grid-cols-3">
         {images.slice(0, 9).map((image, index) => (
-          <button
-            key={`${image}-${index}`}
-            type="button"
-            className="group relative min-h-[190px] overflow-hidden"
-          >
+          <button key={`${image}-${index}`} type="button" className="group relative min-h-[190px] overflow-hidden">
             <div
               className="absolute inset-0 bg-cover bg-center transition duration-[1200ms] group-hover:scale-[1.06]"
               style={{ backgroundImage: `url(${image})` }}
@@ -664,20 +616,14 @@ function OverviewCard({
           const isOpen = openSection === section.title;
 
           return (
-            <div
-              key={section.title}
-              className="border-b border-[#eee8e3] last:border-b-0"
-            >
+            <div key={section.title} className="border-b border-[#eee8e3] last:border-b-0">
               <button
                 type="button"
                 onClick={() => onToggle(isOpen ? "" : section.title)}
                 className="flex min-h-16 w-full items-center justify-between px-5 text-left text-base font-black transition hover:bg-[#fff0ec]"
               >
                 {section.title}
-                <ChevronDown
-                  size={19}
-                  className={`text-[#ff5a40] transition ${isOpen ? "rotate-180" : ""}`}
-                />
+                <ChevronDown size={19} className={`text-[#ff5a40] transition ${isOpen ? "rotate-180" : ""}`} />
               </button>
 
               {isOpen ? (
@@ -689,9 +635,7 @@ function OverviewCard({
                         index % 2 === 0 ? "bg-[#f6f6f4]" : "bg-white"
                       }`}
                     >
-                      <span className="font-bold text-[#343434]">
-                        {item.label}
-                      </span>
+                      <span className="font-bold text-[#343434]">{item.label}</span>
                       <span className="font-black">{item.value}</span>
                     </div>
                   ))}
@@ -718,17 +662,12 @@ function ReviewsCard({ provider }: { provider: ProviderDetail }) {
       </div>
 
       <div className="mt-6 grid gap-4">
-        {provider.reviews.map((review) => (
-          <article
-            key={`${review.name}-${review.date}`}
-            className="rounded-[18px] border border-[#eee8e3] p-5"
-          >
+       {provider.reviews.map((review) => (
+          <article key={`${review.name}-${review.date}`} className="rounded-[18px] border border-[#eee8e3] p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="font-black">{review.name}</p>
-                <p className="text-sm font-bold text-[#8a8a8a]">
-                  {review.date}
-                </p>
+                <p className="text-sm font-bold text-[#8a8a8a]">{review.date}</p>
               </div>
 
               <div className="flex items-center gap-1 font-black">
@@ -746,304 +685,38 @@ function ReviewsCard({ provider }: { provider: ProviderDetail }) {
 }
 
 function ContactCard({ provider }: { provider: ProviderDetail }) {
-  const [submitted, setSubmitted] = useState(false);
-
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    eventType: provider.eventTypes[0] ?? "",
-    eventDate: "",
-    guestCount: "",
-    message: `I'm interested in ${provider.name}. Please contact me with availability and a quote.`,
-  });
-
-  function updateField(field: keyof typeof form, value: string) {
-    setForm((current) => ({
-      ...current,
-      [field]: value,
-    }));
-  }
-
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setSubmitted(true);
-  }
-
   return (
-    <>
-      <section className="rounded-[24px] border border-[#deded9] bg-white p-6 shadow-sm">
-        <div className="text-center">
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-[#ff5a40]">
-            Request a quote
-          </p>
+    <section className="rounded-[24px] border border-[#deded9] bg-white p-6 shadow-sm">
+      <h2 className="text-center text-xl font-black">Contact provider</h2>
 
-          <h2 className="mt-2 text-xl font-black">Contact provider</h2>
+      <div className="mt-6 space-y-3">
+        <Field icon={<User size={18} />} value={provider.contact.person} />
+        <Field icon={<Mail size={18} />} value={provider.contact.email} />
+        <Field icon={<Phone size={18} />} value={provider.contact.phone} />
 
-          <p className="mt-2 text-sm font-bold leading-6 text-[#6b7280]">
-            Send your occasion details and the provider can respond with
-            availability and pricing.
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="mt-6 space-y-3">
-          <label className="block">
-            <span className="mb-2 block text-xs font-black uppercase tracking-[0.14em] text-[#8a8a8a]">
-              Your name
-            </span>
-
-            <div className="flex min-h-14 items-center gap-3 rounded-[16px] border border-[#deded9] bg-white px-4 transition focus-within:border-[#ff5a40] focus-within:ring-4 focus-within:ring-[#fff0ec]">
-              <User size={18} className="text-[#ff5a40]" />
-              <input
-                value={form.name}
-                onChange={(event) => updateField("name", event.target.value)}
-                placeholder="Enter your name"
-                className="h-12 min-w-0 flex-1 bg-transparent text-sm font-bold outline-none placeholder:text-[#8a8a8a]"
-                required
-              />
-            </div>
-          </label>
-
-          <label className="block">
-            <span className="mb-2 block text-xs font-black uppercase tracking-[0.14em] text-[#8a8a8a]">
-              Email address
-            </span>
-
-            <div className="flex min-h-14 items-center gap-3 rounded-[16px] border border-[#deded9] bg-white px-4 transition focus-within:border-[#ff5a40] focus-within:ring-4 focus-within:ring-[#fff0ec]">
-              <Mail size={18} className="text-[#ff5a40]" />
-              <input
-                type="email"
-                value={form.email}
-                onChange={(event) => updateField("email", event.target.value)}
-                placeholder="name@example.com"
-                className="h-12 min-w-0 flex-1 bg-transparent text-sm font-bold outline-none placeholder:text-[#8a8a8a]"
-                required
-              />
-            </div>
-          </label>
-
-          <label className="block">
-            <span className="mb-2 block text-xs font-black uppercase tracking-[0.14em] text-[#8a8a8a]">
-              Phone number
-            </span>
-
-            <div className="flex min-h-14 items-center gap-3 rounded-[16px] border border-[#deded9] bg-white px-4 transition focus-within:border-[#ff5a40] focus-within:ring-4 focus-within:ring-[#fff0ec]">
-              <Phone size={18} className="text-[#ff5a40]" />
-              <input
-                value={form.phone}
-                onChange={(event) => updateField("phone", event.target.value)}
-                placeholder="068 000 0000"
-                className="h-12 min-w-0 flex-1 bg-transparent text-sm font-bold outline-none placeholder:text-[#8a8a8a]"
-                required
-              />
-            </div>
-          </label>
-
-          <div className="grid gap-3 sm:grid-cols-2">
-            <label className="block">
-              <span className="mb-2 block text-xs font-black uppercase tracking-[0.14em] text-[#8a8a8a]">
-                Occasion
-              </span>
-
-              <select
-                value={form.eventType}
-                onChange={(event) =>
-                  updateField("eventType", event.target.value)
-                }
-                className="min-h-14 w-full rounded-[16px] border border-[#deded9] bg-white px-4 text-sm font-bold text-[#111111] outline-none transition focus:border-[#ff5a40] focus:ring-4 focus:ring-[#fff0ec]"
-              >
-                {provider.eventTypes.map((eventType) => (
-                  <option key={eventType} value={eventType}>
-                    {eventType}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="block">
-              <span className="mb-2 block text-xs font-black uppercase tracking-[0.14em] text-[#8a8a8a]">
-                Event date
-              </span>
-
-              <input
-                type="date"
-                value={form.eventDate}
-                onChange={(event) =>
-                  updateField("eventDate", event.target.value)
-                }
-                className="min-h-14 w-full rounded-[16px] border border-[#deded9] bg-white px-4 text-sm font-bold text-[#111111] outline-none transition focus:border-[#ff5a40] focus:ring-4 focus:ring-[#fff0ec]"
-              />
-            </label>
-          </div>
-
-          <label className="block">
-            <span className="mb-2 block text-xs font-black uppercase tracking-[0.14em] text-[#8a8a8a]">
-              Guest count
-            </span>
-
-            <input
-              value={form.guestCount}
-              onChange={(event) =>
-                updateField("guestCount", event.target.value)
-              }
-              placeholder="Example: 150 guests"
-              className="min-h-14 w-full rounded-[16px] border border-[#deded9] bg-white px-4 text-sm font-bold text-[#111111] outline-none transition placeholder:text-[#8a8a8a] focus:border-[#ff5a40] focus:ring-4 focus:ring-[#fff0ec]"
-            />
-          </label>
-
-          <label className="block">
-            <span className="mb-2 block text-xs font-black uppercase tracking-[0.14em] text-[#8a8a8a]">
-              Message
-            </span>
-
-            <textarea
-              value={form.message}
-              onChange={(event) => updateField("message", event.target.value)}
-              className="min-h-32 w-full resize-none rounded-[16px] border border-[#deded9] bg-white p-4 text-sm font-bold leading-6 outline-none transition focus:border-[#ff5a40] focus:ring-4 focus:ring-[#fff0ec]"
-              required
-            />
-          </label>
-
-          <button
-            type="submit"
-            className="min-h-14 w-full rounded-[16px] bg-[#ff5a40] px-5 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-[#ed422b] hover:shadow-[0_14px_30px_rgba(255,90,64,0.28)]"
-          >
-            Request Quote
-          </button>
-
-          <a
-            href={`https://wa.me/${provider.contact.whatsapp}`}
-            className="flex min-h-14 w-full items-center justify-center gap-2 rounded-[16px] border border-[#ff5a40] bg-white px-5 text-sm font-black transition hover:bg-[#fff0ec]"
-          >
-            <WhatsAppIcon size={18} />
-            WhatsApp Provider
-          </a>
-
-          <a
-            href={`tel:${provider.contact.phone}`}
-            className="flex min-h-14 w-full items-center justify-center gap-2 rounded-[16px] border border-[#deded9] bg-white px-5 text-sm font-black transition hover:border-[#ff5a40] hover:text-[#ff5a40]"
-          >
-            <Phone size={18} />
-            Show Contact Number
-          </a>
-        </form>
-
-        <p className="mt-5 text-center text-xs leading-5 text-[#8a8a8a]">
-          This is an MVP quote request. When the backend is added, this will
-          create a real provider lead.
-        </p>
-      </section>
-
-      {submitted ? (
-        <QuoteSuccessModal
-          provider={provider}
-          form={form}
-          onClose={() => setSubmitted(false)}
+        <textarea
+          defaultValue={`I'm interested in ${provider.name}. Please contact me with availability and a quote.`}
+          className="min-h-28 w-full resize-none rounded-[16px] border border-[#deded9] bg-white p-4 text-sm font-bold outline-none transition focus:border-[#ff5a40] focus:ring-4 focus:ring-[#fff0ec]"
         />
-      ) : null}
-    </>
+
+        <button type="button" className="min-h-14 w-full rounded-[16px] bg-[#ff5a40] px-5 text-sm font-black text-white transition hover:bg-[#ed422b]">
+          Request Quote
+        </button>
+
+        <a href={`https://wa.me/${provider.contact.whatsapp}`} className="flex min-h-14 w-full items-center justify-center gap-2 rounded-[16px] border border-[#ff5a40] bg-white px-5 text-sm font-black transition hover:bg-[#fff0ec]">
+          <MessageCircle size={18} className="text-[#ff5a40]" />
+          WhatsApp Provider
+        </a>
+      </div>
+    </section>
   );
 }
 
-function QuoteSuccessModal({
-  provider,
-  form,
-  onClose,
-}: {
-  provider: ProviderDetail;
-  form: {
-    name: string;
-    email: string;
-    phone: string;
-    eventType: string;
-    eventDate: string;
-    guestCount: string;
-    message: string;
-  };
-  onClose: () => void;
-}) {
+function Field({ icon, value }: { icon: ReactNode; value: string }) {
   return (
-    <div className="fixed inset-0 z-[130] flex items-center justify-center bg-black/55 px-5 backdrop-blur-md">
-      <div className="w-full max-w-xl overflow-hidden rounded-[28px] bg-white shadow-[0_30px_90px_rgba(17,17,17,0.35)]">
-        <div className="bg-[#ff5a40] px-7 py-7 text-white">
-          <div className="flex items-start justify-between gap-5">
-            <div>
-              <div className="flex size-14 items-center justify-center rounded-full bg-white text-[#ff5a40]">
-                <Check size={28} strokeWidth={3} />
-              </div>
-
-              <h3 className="mt-5 text-2xl font-black">Quote request ready</h3>
-
-              <p className="mt-2 text-sm font-bold leading-6 text-white/90">
-                Your details have been captured for {provider.name}.
-              </p>
-            </div>
-
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex size-11 shrink-0 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-white hover:text-[#111111]"
-              aria-label="Close quote success"
-            >
-              <X size={22} />
-            </button>
-          </div>
-        </div>
-
-        <div className="space-y-4 p-7">
-          <div className="rounded-[18px] bg-[#f6f6f4] p-5">
-            <p className="text-xs font-black uppercase tracking-[0.16em] text-[#8a8a8a]">
-              Lead summary
-            </p>
-
-            <div className="mt-4 grid gap-3 text-sm font-bold text-[#111111]">
-              <p>
-                <span className="text-[#8a8a8a]">Name:</span> {form.name}
-              </p>
-              <p>
-                <span className="text-[#8a8a8a]">Occasion:</span>{" "}
-                {form.eventType}
-              </p>
-              {form.guestCount ? (
-                <p>
-                  <span className="text-[#8a8a8a]">Guests:</span>{" "}
-                  {form.guestCount}
-                </p>
-              ) : null}
-              {form.eventDate ? (
-                <p>
-                  <span className="text-[#8a8a8a]">Date:</span> {form.eventDate}
-                </p>
-              ) : null}
-            </div>
-          </div>
-
-          <p className="text-sm font-bold leading-6 text-[#6b7280]">
-            In the final version, this request will be saved to the provider
-            dashboard and emailed to the provider.
-          </p>
-
-          <div className="grid gap-3 sm:grid-cols-2">
-            <a
-              href={`https://wa.me/${provider.contact.whatsapp}`}
-              target="_blank"
-              rel="noreferrer"
-              className="flex min-h-12 items-center justify-center gap-2 rounded-[16px] bg-[#ff5a40] px-5 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-[#ed422b] hover:shadow-[0_12px_24px_rgba(255,90,64,0.28)]"
-            >
-              <WhatsAppIcon size={18} />
-              <span>Chat on WhatsApp</span>
-            </a>
-
-            <button
-              type="button"
-              onClick={onClose}
-              className="min-h-12 rounded-[16px] border border-[#deded9] bg-white px-5 text-sm font-black text-[#111111] transition hover:border-[#ff5a40] hover:bg-[#fff8f6] hover:text-[#ff5a40]"
-            >
-              Keep browsing
-            </button>
-          </div>
-        </div>
-      </div>
+    <div className="flex min-h-14 items-center gap-3 rounded-[16px] border border-[#deded9] bg-white px-4 text-sm font-bold">
+      <span className="text-[#ff5a40]">{icon}</span>
+      <span className="truncate">{value}</span>
     </div>
   );
 }
@@ -1056,9 +729,7 @@ function TrustCard({ provider }: { provider: ProviderDetail }) {
       </div>
 
       <h3 className="mt-4 text-lg font-black">{provider.name}</h3>
-      <p className="mt-2 text-sm font-bold text-[#6b7280]">
-        {provider.category}
-      </p>
+      <p className="mt-2 text-sm font-bold text-[#6b7280]">{provider.category}</p>
 
       <div className="mt-5 grid gap-3 text-left">
         {provider.highlights.slice(0, 3).map((item) => (
@@ -1078,18 +749,13 @@ function ShareCard() {
       <h3 className="text-lg font-black">Share</h3>
 
       <div className="mt-5 flex justify-center gap-3">
-        {[
-          { key: "facebook", label: "f" },
-          { key: "x", label: "𝕏" },
-          { key: "whatsapp", icon: <WhatsAppIcon size={18} variant="mono" className="text-white" /> },
-          { key: "email", label: "@" },
-        ].map((item) => (
+        {["f", "𝕏", "wa", "@"].map((item) => (
           <button
-            key={item.key}
+            key={item}
             type="button"
             className="flex size-11 items-center justify-center rounded-[14px] bg-[#111111] text-sm font-black text-white transition hover:bg-[#ff5a40]"
           >
-            {item.icon ?? item.label}
+            {item}
           </button>
         ))}
       </div>
@@ -1111,10 +777,7 @@ function ActionsCard() {
 
 function Action({ icon, label }: { icon: ReactNode; label: string }) {
   return (
-    <button
-      type="button"
-      className="flex min-h-12 items-center gap-4 rounded-[14px] px-3 text-left text-sm font-black transition hover:bg-[#fff0ec] hover:text-[#ff5a40]"
-    >
+    <button type="button" className="flex min-h-12 items-center gap-4 rounded-[14px] px-3 text-left text-sm font-black transition hover:bg-[#fff0ec] hover:text-[#ff5a40]">
       <span className="text-[#ff5a40]">{icon}</span>
       {label}
     </button>
@@ -1142,12 +805,8 @@ function SimilarProviders({ provider }: { provider: ProviderDetail }) {
 
             <div className="p-5">
               <p className="text-lg font-black">{item.name}</p>
-              <p className="mt-1 text-sm font-bold text-[#6b7280]">
-                {item.location}
-              </p>
-              <p className="mt-3 text-xl font-black text-[#ff5a40]">
-                {item.priceLabel}
-              </p>
+              <p className="mt-1 text-sm font-bold text-[#6b7280]">{item.location}</p>
+              <p className="mt-3 text-xl font-black text-[#ff5a40]">{item.priceLabel}</p>
             </div>
           </Link>
         ))}
