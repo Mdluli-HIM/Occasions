@@ -57,7 +57,7 @@ export function SiteHeader() {
           </nav>
 
           <div className="hidden items-center gap-4 md:flex">
-            <Link href="#list-business">
+            <Link href="/list-your-business">
               <Button
                 variant="outline"
                 className="min-h-11 rounded-2xl border-[#ece7e2] px-6"
@@ -68,7 +68,7 @@ export function SiteHeader() {
 
             <button
               type="button"
-              className="relative inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#fff0ec] text-[#ff5a40]"
+              className="relative inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#ff5a40]/30 bg-white text-[#111111]"
               aria-label="Notifications"
             >
               <Bell size={20} />
@@ -79,7 +79,7 @@ export function SiteHeader() {
 
             <button
               type="button"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#fff0ec] text-[#ff5a40]"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#ff5a40]/30 bg-white text-[#111111]"
               aria-label="Account"
             >
               <UserRound size={21} />
@@ -88,7 +88,7 @@ export function SiteHeader() {
 
           <button
             type="button"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#fff0ec] text-[#ff5a40] md:hidden"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#ff5a40]/30 bg-white text-[#111111] md:hidden"
             aria-label="Account"
           >
             <UserRound size={21} />
@@ -227,7 +227,7 @@ function MobileMenu({
 
         <button
           type="button"
-          className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#fff0ec] text-[#ff5a40]"
+          className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#ff5a40]/30 bg-white text-[#111111]"
           aria-label="Account"
         >
           <UserRound size={23} />
@@ -252,7 +252,7 @@ function MobileMenu({
         <div className="sticky bottom-0 mt-8 border-t border-[#ece7e2] bg-white/95 py-4 backdrop-blur">
           <div className="grid gap-3">
             <Link
-              href="#list-business"
+              href="/list-your-business"
               onClick={onClose}
               className="flex min-h-14 items-center justify-center rounded-2xl bg-[#ff5a40] px-5 text-sm font-black text-white"
             >
@@ -293,7 +293,7 @@ function MobileMenuItem({
         onClick={onToggle}
         className="flex min-h-[74px] w-full items-center gap-4 py-4 text-left"
       >
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#fff0ec] text-[#ff5a40]">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[#ff5a40]/30 bg-white text-[#111111]">
           <Icon size={23} />
         </span>
 

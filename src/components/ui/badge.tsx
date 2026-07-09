@@ -12,7 +12,7 @@ export function Badge({ children, tone = "light", className }: BadgeProps) {
       className={cn(
         "inline-flex items-center rounded-full px-3 py-1 text-xs font-bold",
         tone === "blue" && "bg-blue-100 text-[#ff5a40]",
-        tone === "red" && "bg-[#fff0ec] text-[#ff5a40]",
+        tone === "red" && "border border-[#ff5a40]/30 bg-white text-[#111111]",
         tone === "green" && "bg-emerald-100 text-emerald-700",
         tone === "light" && "bg-white/90 text-[#111111]",
         className,

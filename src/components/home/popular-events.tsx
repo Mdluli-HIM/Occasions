@@ -20,7 +20,7 @@ export function PopularEvents() {
               key={event.id}
               className="group rounded-3xl border border-[#deded9] bg-white p-7 shadow-sm transition-all duration-500 ease-out hover:-translate-y-0.5 hover:border-[#ffb8ad] hover:shadow-[0_18px_45px_rgba(17,17,17,0.08)]"
             >
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#fff0ec] text-[#ff5a40] transition-all duration-500 ease-out group-hover:bg-[#ffe1da]">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-[#ff5a40]/30 bg-white text-[#111111] transition-all duration-500 ease-out group-hover:border-[#ff5a40]">
                 <CalendarDays size={27} />
               </div>
 

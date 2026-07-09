@@ -101,14 +101,14 @@ export const desktopNavItems: NavItem[] = [
   },
   {
     label: "For Businesses",
-    href: "#list-business",
+    href: "/list-your-business",
     description: "Everything for service providers who want visibility, enquiries and a strong presence on Occasions.",
     groups: [
       {
         title: "Get Started",
         links: [
-          { label: "List Your Business", href: "#list-business", description: "Create your provider profile" },
-          { label: "Create Free Listing", href: "#list-business", description: "Launch your listing and get discovered" },
+          { label: "List Your Business", href: "/list-your-business", description: "Create your provider profile" },
+          { label: "Create Free Listing", href: "/list-your-business", description: "Launch your listing and get discovered" },
           { label: "Provider Dashboard", href: "/provider-dashboard", description: "Manage listings, leads and insights" },
         ],
       },

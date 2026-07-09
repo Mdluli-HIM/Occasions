@@ -135,7 +135,6 @@ export function ProviderDetailPage({ provider }: { provider: ProviderDetail }) {
               onToggle={setOpenSection}
             />
             <ReviewsCard provider={provider} />
-            <SimilarProviders provider={provider} />
           </div>
 
           <aside className="space-y-5 lg:sticky lg:top-24 lg:self-start">
@@ -473,7 +472,7 @@ function SummaryCard({
             </span>
 
             {provider.verified ? (
-              <span className="inline-flex items-center gap-1 rounded-full bg-[#fff0ec] px-3 py-1 text-[#ff5a40]">
+              <span className="inline-flex items-center gap-1 rounded-full border border-[#ff5a40]/30 bg-white px-3 py-1 text-[#111111]">
                 <ShieldCheck size={15} />
                 Verified
               </span>
@@ -566,7 +565,7 @@ function AboutCard({ provider }: { provider: ProviderDetail }) {
         {provider.highlights.map((highlight) => (
           <div
             key={highlight}
-            className="flex items-center gap-3 rounded-[16px] border border-[#eee8e3] bg-[#fffaf8] p-4 text-sm font-bold"
+            className="flex items-center gap-3 rounded-[16px] border border-[#eee8e3] bg-white p-4 text-sm font-bold"
           >
             <span className="flex size-7 items-center justify-center rounded-full bg-[#ff5a40] text-white">
               <Check size={15} strokeWidth={3} />
@@ -588,7 +587,7 @@ function PillCard({ title, items }: { title: string; items: string[] }) {
         {items.map((item) => (
           <span
             key={item}
-            className="rounded-full border border-[#ff5a40]/30 bg-[#fff0ec] px-4 py-2 text-sm font-black text-[#ff5a40] transition hover:bg-[#ff5a40] hover:text-white"
+            className="rounded-full border border-[#ff5a40]/30 bg-white px-4 py-2 text-sm font-black text-[#111111] transition hover:bg-[#ff5a40] hover:text-white"
           >
             {item}
           </span>
@@ -1118,40 +1117,5 @@ function Action({ icon, label }: { icon: ReactNode; label: string }) {
       <span className="text-[#ff5a40]">{icon}</span>
       {label}
     </button>
-  );
-}
-
-function SimilarProviders({ provider }: { provider: ProviderDetail }) {
-  return (
-    <section className="rounded-[24px] border border-[#deded9] bg-white p-6 shadow-sm md:p-8">
-      <h2 className="text-xl font-black">Similar providers</h2>
-
-      <div className="mt-5 grid gap-4 md:grid-cols-2">
-        {provider.similar.map((item) => (
-          <Link
-            key={item.id}
-            href={`/providers/${item.id}`}
-            className="group overflow-hidden rounded-[20px] border border-[#eee8e3] bg-white transition hover:border-[#ff5a40] hover:shadow-[0_18px_40px_rgba(17,17,17,0.08)]"
-          >
-            <div className="relative h-44 overflow-hidden">
-              <div
-                className="absolute inset-0 bg-cover bg-center transition duration-[1200ms] group-hover:scale-[1.06]"
-                style={{ backgroundImage: `url(${item.image})` }}
-              />
-            </div>
-
-            <div className="p-5">
-              <p className="text-lg font-black">{item.name}</p>
-              <p className="mt-1 text-sm font-bold text-[#6b7280]">
-                {item.location}
-              </p>
-              <p className="mt-3 text-xl font-black text-[#ff5a40]">
-                {item.priceLabel}
-              </p>
-            </div>
-          </Link>
-        ))}
-      </div>
-    </section>
   );
 }

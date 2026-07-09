@@ -541,8 +541,8 @@ function ProviderResultCard({
 function ProviderAlertsPanel() {
   return (
     <div className="overflow-hidden rounded-[24px] border border-[#deded9] bg-white shadow-sm">
-      <div className="bg-[#fff0ec] px-6 py-7">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-[#ff5a40]">
+      <div className="border-b border-[#ff5a40]/20 bg-white px-6 py-7">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-[#ff5a40]/30 bg-white text-[#111111]">
           <Bell size={28} />
         </div>
       </div>
@@ -641,7 +641,7 @@ function MobileFiltersDrawer({
           <button
             type="button"
             onClick={onClose}
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-[#fff0ec] text-[#ff5a40]"
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-[#ff5a40]/30 bg-white text-[#111111]"
           >
             <X size={22} />
           </button>
@@ -926,7 +926,7 @@ function SelectField({
 function EmptyState({ onClear }: { onClear: () => void }) {
   return (
     <div className="rounded-[24px] border border-[#deded9] bg-white p-8 text-center shadow-sm">
-      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#fff0ec] text-[#ff5a40]">
+      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-[#ff5a40]/30 bg-white text-[#111111]">
         <Search size={28} />
       </div>
 

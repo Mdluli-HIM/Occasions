@@ -25,7 +25,7 @@ const footerGroups = [
   {
     title: "Providers",
     links: [
-      { label: "List Your Business", href: "#list-business" },
+      { label: "List Your Business", href: "/list-your-business" },
       { label: "Pricing", href: "#pricing" },
       { label: "Featured Listings", href: "#providers" },
       { label: "Leads", href: "/prvider-dashboard/leads" },

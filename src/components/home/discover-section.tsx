@@ -40,7 +40,7 @@ export function DiscoverSection() {
                 key={item.title}
                 className="rounded-2xl border border-slate-100 p-6 text-center"
               >
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#fff0ec] text-[#ff5a40]">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-[#ff5a40]/30 bg-white text-[#111111]">
                   <Icon size={30} />
                 </div>
 
