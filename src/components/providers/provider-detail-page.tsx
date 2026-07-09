@@ -27,16 +27,36 @@ import {
   X,
 } from "lucide-react";
 import type { ProviderDetail } from "@/data/provider-details";
+import { SiteFooter } from "@/components/layout/site-footer";
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 
 export function ProviderDetailPage({ provider }: { provider: ProviderDetail }) {
   const [activeImage, setActiveImage] = useState(provider.images[0]);
   const [saved, setSaved] = useState(false);
+  const [footerInView, setFooterInView] = useState(false);
   const [openSection, setOpenSection] = useState(
     provider.overview[0]?.title ?? "",
   );
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [galleryIndex, setGalleryIndex] = useState(0);
+  const footerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const target = footerRef.current;
+
+    if (!target) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setFooterInView(entry.isIntersecting);
+      },
+      { threshold: 0.2 },
+    );
+
+    observer.observe(target);
+
+    return () => observer.disconnect();
+  }, []);
 
   function openGalleryAt(index: number) {
     setGalleryIndex(index);
@@ -46,7 +66,11 @@ export function ProviderDetailPage({ provider }: { provider: ProviderDetail }) {
 
   return (
     <main className="min-h-screen bg-[#f6f6f4] text-[#111111]">
-      <header className="sticky top-0 z-50 border-b border-[#ece7e2] bg-white/95 backdrop-blur-md">
+      <header
+        className={`sticky top-0 z-50 border-b border-[#ece7e2] bg-white/95 backdrop-blur-md transition-all duration-300 ${
+          footerInView ? "pointer-events-none -translate-y-full opacity-0" : ""
+        }`}
+      >
         <div className="mx-auto flex min-h-20 max-w-7xl items-center justify-between gap-5 px-5 md:px-8">
           <Link
             href="/"
@@ -145,6 +169,10 @@ export function ProviderDetailPage({ provider }: { provider: ProviderDetail }) {
           </aside>
         </div>
       </section>
+
+      <div ref={footerRef}>
+        <SiteFooter immersive />
+      </div>
     </main>
   );
 }

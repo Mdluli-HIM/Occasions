@@ -6,56 +6,91 @@ import Link from "next/link";
 import {
   ArrowRight,
   Check,
+  ChevronRight,
   ChevronUp,
   Phone,
   Plus,
   X,
 } from "lucide-react";
 
-const packages = [
+type ProviderPackage = {
+  tag: string;
+  name: string;
+  price: string;
+  period: string;
+  subPrice: string;
+  description: string;
+  cta: string;
+  featured: boolean;
+  includes: string[];
+  excludes: string[];
+};
+
+const packages: ProviderPackage[] = [
   {
-    name: "Occasions Starter Listing",
+    tag: "Starter",
+    name: "Starter Listing",
     price: "R729",
-    priceNote: "once-off",
-    monthlyPrice: "",
-    monthlyNote: "",
+    period: "once-off",
+    subPrice: "",
     description:
-      "Create a polished provider profile that helps customers understand what you offer before they contact you. Add your services, event types, areas served, price guidance, capacity, photos and contact options so people planning occasions can find and enquire with you directly.",
+      "A simple provider profile for businesses that want to be found and contacted directly.",
     cta: "List Your Business",
-    features: [
-      "Create a searchable provider profile for your business",
-      "Show your service categories, event types, areas served and capacity",
-      "Add a photo gallery that helps customers trust your work",
-      "Display price guidance so customers understand your starting range",
-      "Appear in relevant service and location searches for 3 months",
-      "Receive direct quote enquiries through call, email or WhatsApp",
-      "Manage your listing details from a simple provider dashboard",
+    featured: false,
+    includes: [
+      "Provider profile",
+      "Photo gallery",
+      "Service and area listing",
+      "Call, email and WhatsApp enquiries",
     ],
-    footnote: "",
-    highlighted: false,
+    excludes: [
+      "Featured search placement",
+      "Monthly enquiry report",
+    ],
   },
   {
-    name: "Occasions Featured Partner",
+    tag: "Most Popular",
+    name: "Featured Provider",
     price: "R2 849",
-    priceNote: "once-off setup",
-    monthlyPrice: "R199",
-    monthlyNote: "pm",
+    period: "setup",
+    subPrice: "R199 / month",
     description:
-      "Built for providers who want stronger visibility, better trust signals and a more serious lead pipeline. Your business gets featured placement, improved listing support, enquiry tracking and guidance to help turn customer interest into real bookings.",
-    cta: "Enquire",
-    features: [
-      "Everything included in the Starter Listing",
-      "Featured placement in relevant service and area results",
-      "Promoted provider badge to improve trust and visibility",
-      "Priority visibility during high-demand event seasons",
-      "Monthly enquiry summary with views, contact actions and quote activity",
-      "Lead follow-up support so important enquiries do not get missed",
-      "Listing improvement guidance for photos, wording and service presentation",
-      "Access to future partner opportunities across the Occasions network",
+      "Better visibility for providers who want more serious quote enquiries.",
+    cta: "Choose Featured",
+    featured: true,
+    includes: [
+      "Everything in Starter",
+      "Featured search placement",
+      "Promoted provider badge",
+      "Monthly enquiry summary",
+      "Listing improvement support",
     ],
-    footnote:
-      "*Monthly fee keeps featured visibility, enquiry tracking and partner tools active. Lead performance depends on service category, area, seasonality, pricing and customer demand.",
-    highlighted: true,
+    excludes: [
+      "Homepage campaign placement",
+      "Dedicated account manager",
+    ],
+  },
+  {
+    tag: "Premium",
+    name: "Premium Partner",
+    price: "Custom",
+    period: "monthly",
+    subPrice: "Built around your goals",
+    description:
+      "For providers who want stronger exposure and custom growth support.",
+    cta: "Talk to Us",
+    featured: false,
+    includes: [
+      "Everything in Featured",
+      "Top category placement",
+      "Campaign visibility",
+      "Priority support",
+      "Custom profile improvements",
+    ],
+    excludes: [
+      "Guaranteed bookings",
+      "Payment processing",
+    ],
   },
 ];
 
@@ -152,97 +187,134 @@ export default function ListYourBusinessPage() {
         </div>
       </section>
 
-      <section id="packages" className="px-5 py-16 md:py-20">
-        <div className="mx-auto max-w-6xl">
+      <section id="packages" className="bg-[#f4f5f8] px-5 py-16 md:py-20">
+        <div className="mx-auto max-w-7xl">
           <div className="text-center">
-            <h2 className="text-4xl font-light tracking-tight text-[#171436] md:text-5xl">
-              Provider Listing Packages
+            <p className="text-sm font-black uppercase tracking-[0.18em] text-[#ff5a40]">
+              Provider packages
+            </p>
+
+            <h2 className="mx-auto mt-4 max-w-3xl text-4xl font-light tracking-tight text-[#171436] md:text-5xl">
+              Choose the package that fits your business.
             </h2>
 
-            <a
-              href="#callback"
-              className="mt-4 inline-flex text-sm font-black text-[#ff5a40] hover:underline"
-            >
-              Need help choosing?
-            </a>
+            <p className="mx-auto mt-5 max-w-2xl text-base font-semibold leading-7 text-[#596273]">
+              Simple options for getting listed, getting seen, and receiving better enquiries.
+            </p>
           </div>
 
-          <div className="mx-auto mt-14 grid max-w-5xl gap-8 md:grid-cols-2">
-            {packages.map((item) => (
-              <article
-                key={item.name}
-                className={`flex min-h-[760px] flex-col rounded-[16px] border bg-white p-8 text-center shadow-[0_24px_70px_rgba(17,17,17,0.06)] ${
-                  item.highlighted ? "border-[#ff5a40]" : "border-[#b9c0cc]"
-                }`}
-              >
-                {item.highlighted ? (
-                  <div className="mx-auto mb-5 rounded-full border border-[#ff5a40]/30 bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.14em] text-[#111111]">
-                    Recommended
+          <div className="mx-auto mt-12 max-w-7xl rounded-[34px] bg-[#e8ebf4] p-4 shadow-[0_24px_70px_rgba(17,17,17,0.06)] md:p-6">
+            <div className="grid gap-4 lg:grid-cols-3">
+              {packages.map((item, index) => (
+                <article
+                  key={item.name}
+                  className={`flex min-h-[560px] flex-col rounded-[26px] p-7 transition hover:-translate-y-1 ${
+                    index === 0
+                      ? "bg-transparent"
+                      : "bg-white shadow-[0_16px_45px_rgba(17,17,17,0.06)]"
+                  } ${
+                    item.featured
+                      ? "border border-[#ff5a40]/40"
+                      : "border border-white/60"
+                  }`}
+                >
+                  <div className="flex items-start gap-4">
+                    <div
+                      className={`flex size-12 shrink-0 items-center justify-center rounded-[16px] border ${
+                        item.featured
+                          ? "border-[#ff5a40]/30 bg-white text-[#ff5a40]"
+                          : "border-[#d8deea] bg-white text-[#171436]"
+                      }`}
+                    >
+                      <Check size={20} />
+                    </div>
+
+                    <div>
+                      <p className="text-lg font-black text-[#171436]">
+                        {item.name}
+                      </p>
+
+                      <p
+                        className={`mt-1 text-xs font-black uppercase tracking-[0.14em] ${
+                          item.featured ? "text-[#ff5a40]" : "text-[#7b8495]"
+                        }`}
+                      >
+                        {item.tag}
+                      </p>
+                    </div>
                   </div>
-                ) : null}
 
-                <h3 className="text-2xl font-semibold text-[#171436]">
-                  {item.name}
-                </h3>
+                  <div className="mt-8">
+                    <p className="text-4xl font-light tracking-tight text-[#171436]">
+                      <span className="font-black">{item.price}</span>
+                      <span className="ml-2 text-base font-black">
+                        {item.period}
+                      </span>
+                    </p>
 
-                <div className="mt-10">
-                  <p className="text-3xl font-black text-[#171436]">
-                    {item.price}{" "}
-                    <span className="text-lg font-black">{item.priceNote}</span>
+                    {item.subPrice ? (
+                      <p className="mt-3 text-base font-black text-[#ff5a40]">
+                        {item.subPrice}
+                      </p>
+                    ) : null}
+                  </div>
+
+                  <p className="mt-5 min-h-[56px] text-sm font-semibold leading-7 text-[#596273]">
+                    {item.description}
                   </p>
 
-                  {item.monthlyPrice ? (
-                    <>
-                      <p className="mt-4 text-3xl font-black text-[#171436]">
-                        {item.monthlyPrice}{" "}
-                        <span className="text-lg font-black">
-                          {item.monthlyNote}
-                        </span>
-                      </p>
-
-                      <p className="mt-3 text-sm font-semibold text-[#171436]">
-                        Featured visibility and lead tools
-                      </p>
-                    </>
-                  ) : null}
-                </div>
-
-                <p className="mx-auto mt-10 max-w-sm text-base font-medium leading-7 text-[#171436]">
-                  {item.description}
-                </p>
-
-                <div className="mt-10 space-y-4 text-left">
-                  {item.features.map((feature) => (
-                    <div
-                      key={feature}
-                      className="grid grid-cols-[22px_minmax(0,1fr)] gap-3 text-base font-medium leading-6 text-[#171436]"
-                    >
-                      <Check size={18} className="mt-1 text-[#43c6a0]" />
-                      <span>{feature}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-auto pt-10">
-                  <a
-                    href="#callback"
-                    className={`flex min-h-[52px] items-center justify-center rounded-[10px] px-6 text-base font-black text-white transition hover:-translate-y-0.5 ${
-                      item.highlighted
-                        ? "bg-[#ff5a40] hover:bg-[#ed422b]"
-                        : "bg-[#43c6a0] hover:bg-[#34b08d]"
-                    }`}
-                  >
-                    {item.cta}
-                  </a>
-
-                  {item.footnote ? (
-                    <p className="mt-6 text-left text-xs font-semibold leading-5 text-[#596273]">
-                      {item.footnote}
+                  <div className="mt-7">
+                    <p className="text-sm font-black uppercase tracking-[0.14em] text-[#9aa4b5]">
+                      Includes
                     </p>
-                  ) : null}
-                </div>
-              </article>
-            ))}
+
+                    <div className="mt-4 grid gap-3">
+                      {item.includes.map((feature) => (
+                        <div
+                          key={feature}
+                          className="grid grid-cols-[22px_minmax(0,1fr)] gap-3 text-sm font-black leading-6 text-[#171436]"
+                        >
+                          <Check size={17} className="mt-1 text-[#43c6a0]" />
+                          <span>{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="mt-7">
+                    <p className="text-sm font-black uppercase tracking-[0.14em] text-[#9aa4b5]">
+                      Not included
+                    </p>
+
+                    <div className="mt-4 grid gap-3">
+                      {item.excludes.map((feature) => (
+                        <div
+                          key={feature}
+                          className="grid grid-cols-[22px_minmax(0,1fr)] gap-3 text-sm font-bold leading-6 text-[#7b8495]"
+                        >
+                          <X size={16} className="mt-1 text-[#9aa4b5]" />
+                          <span>{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="mt-auto pt-9">
+                    <a
+                      href="#callback"
+                      className={`flex min-h-[52px] items-center justify-center gap-2 rounded-[14px] px-6 text-sm font-black transition hover:-translate-y-0.5 ${
+                        item.featured
+                          ? "bg-[#ff5a40] text-white hover:bg-[#ed422b]"
+                          : "border border-[#d8deea] bg-white text-[#171436] hover:border-[#ff5a40] hover:text-[#ff5a40]"
+                      }`}
+                    >
+                      {item.cta}
+                      <ChevronRight size={17} />
+                    </a>
+                  </div>
+                </article>
+              ))}
+            </div>
           </div>
         </div>
       </section>
