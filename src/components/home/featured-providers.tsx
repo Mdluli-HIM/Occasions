@@ -31,7 +31,7 @@ export function FeaturedProviders() {
 
                 <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-black/20 to-black/72 transition-opacity duration-[1200ms] ease-out group-hover:opacity-95" />
 
-                <div className="absolute inset-0 bg-[#ff5a40]/0 mix-blend-multiply transition-colors duration-[1200ms] ease-out group-hover:bg-[#ff5a40]/5" />
+                <div className="absolute inset-0 bg-[#ff5a40]/0 mix-blend-multiply transition-colors duration-[1200ms] ease-out group-hover:bg-[#ff5a40]/5 !text-white [&_*]:!text-white" />
 
                 <div className="absolute left-4 top-4 z-10 flex flex-wrap gap-2">
                   {provider.isFeatured ? <Badge tone="red">Featured</Badge> : null}

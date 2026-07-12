@@ -142,7 +142,7 @@ export function HeroSearch() {
         </div>
       </div>
 
-      <div className="bg-[#ff5a40]">
+      <div className="bg-[#ff5a40] !text-white [&_*]:!text-white">
         <div className="mx-auto max-w-7xl px-5 pb-10 md:px-8 md:pb-12">
           <div className="mx-auto grid w-full max-w-xl grid-cols-4 items-center gap-1 pt-5 text-center text-sm font-bold text-white md:flex md:max-w-4xl md:justify-center md:gap-10 md:pt-6 md:text-lg">
             {tabs.map((tab) => {
@@ -454,7 +454,7 @@ function FilterDropdown({
             <button
               type="button"
               onClick={onClose}
-              className="min-h-12 w-full rounded-xl bg-[#ff5a40] px-5 text-sm font-black text-white transition hover:bg-[#ed422b]"
+              className="min-h-12 w-full rounded-xl bg-[#ff5a40] px-5 text-sm font-black text-white transition hover:bg-[#ed422b] !text-white [&_*]:!text-white"
             >
               Done
             </button>
@@ -507,9 +507,9 @@ function MoreFiltersModal({
           </button>
         </div>
 
-        <div className="bg-[#ff5a40] px-6 py-6">
+        <div className="bg-[#ff5a40] px-6 py-6 !text-white [&_*]:!text-white">
           <div className="flex min-h-14 items-center gap-3 rounded-2xl bg-white px-4">
-            <Search size={22} className="text-[#111111]" />
+            <Search size={22} className="text-white" />
             <span className="text-sm font-semibold text-[#8a8a8a]">
               Refine providers by service, occasion, budget and guest count
             </span>
@@ -558,7 +558,7 @@ function MoreFiltersModal({
           <button
             type="button"
             onClick={onClose}
-            className="min-h-14 rounded-xl bg-[#ff5a40] px-8 text-base font-black text-white transition hover:bg-[#ed422b]"
+            className="min-h-14 rounded-xl bg-[#ff5a40] px-8 text-base font-black text-white transition hover:bg-[#ed422b] !text-white [&_*]:!text-white"
           >
             {resultCount === 1
               ? "Show 1 Provider"

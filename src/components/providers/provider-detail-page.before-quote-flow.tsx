@@ -67,7 +67,7 @@ export function ProviderDetailPage({ provider }: { provider: ProviderDetail }) {
 
             <a
               href={`tel:${provider.contact.phone}`}
-              className="hidden min-h-12 items-center rounded-[16px] bg-[#ff5a40] px-6 text-sm font-black text-white transition hover:bg-[#ed422b] md:inline-flex"
+              className="hidden min-h-12 items-center rounded-[16px] bg-[#ff5a40] px-6 text-sm font-black text-white transition hover:bg-[#ed422b] md:inline-flex !text-white [&_*]:!text-white"
             >
               Contact Provider
             </a>
@@ -75,7 +75,7 @@ export function ProviderDetailPage({ provider }: { provider: ProviderDetail }) {
         </div>
       </header>
 
-      <section className="border-y border-[#ed422b] bg-[#ff5a40] px-5 py-4 text-white">
+      <section className="border-y border-[#ed422b] bg-[#ff5a40] px-5 py-4 text-white !text-white [&_*]:!text-white">
         <div className="mx-auto flex max-w-7xl items-center gap-2 text-sm font-bold">
           <Link href="/search" className="inline-flex items-center gap-2 hover:text-white/80">
             <ArrowLeft size={16} />
@@ -166,7 +166,7 @@ function Gallery({
 
           <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/5 to-transparent" />
 
-          <div className="absolute bottom-6 left-6 rounded-full bg-white/95 px-4 py-2 text-sm font-black shadow-lg transition group-hover:bg-[#ff5a40] group-hover:text-white">
+          <div className="absolute bottom-6 left-6 rounded-full bg-white/95 px-4 py-2 text-sm font-black shadow-lg transition group-hover:bg-[#ff5a40] group-hover:text-white !text-white [&_*]:!text-white">
             {provider.images.length} photos
           </div>
         </button>
@@ -193,7 +193,7 @@ function Gallery({
                 <div className="absolute inset-0 bg-black/0 transition group-hover:bg-black/10" />
 
                 {index === 1 ? (
-                  <div className="absolute bottom-5 right-5 rounded-[16px] bg-white px-5 py-3 text-sm font-black shadow-lg transition group-hover:bg-[#ff5a40] group-hover:text-white">
+                  <div className="absolute bottom-5 right-5 rounded-[16px] bg-white px-5 py-3 text-sm font-black shadow-lg transition group-hover:bg-[#ff5a40] group-hover:text-white !text-white [&_*]:!text-white">
                     See all {provider.images.length} images
                   </div>
                 ) : null}
@@ -323,7 +323,7 @@ function ImageLightbox({
           <button
             type="button"
             onClick={onClose}
-            className="flex size-12 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-[#ff5a40]"
+            className="flex size-12 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-[#ff5a40] !text-white [&_*]:!text-white"
             aria-label="Close image gallery"
           >
             <X size={24} />
@@ -339,7 +339,7 @@ function ImageLightbox({
           <button
             type="button"
             onClick={goToPrevious}
-            className="absolute left-5 top-1/2 z-10 hidden size-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur transition hover:bg-[#ff5a40] md:left-8 md:flex"
+            className="absolute left-5 top-1/2 z-10 hidden size-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur transition hover:bg-[#ff5a40] md:left-8 md:flex !text-white [&_*]:!text-white"
             aria-label="Previous image"
           >
             <ChevronLeft size={28} />
@@ -359,7 +359,7 @@ function ImageLightbox({
           <button
             type="button"
             onClick={goToNext}
-            className="absolute right-5 top-1/2 z-10 hidden size-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur transition hover:bg-[#ff5a40] md:right-8 md:flex"
+            className="absolute right-5 top-1/2 z-10 hidden size-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur transition hover:bg-[#ff5a40] md:right-8 md:flex !text-white [&_*]:!text-white"
             aria-label="Next image"
           >
             <ChevronRight size={28} />
@@ -389,7 +389,7 @@ function ImageLightbox({
                   />
 
                   {isActive ? (
-                    <span className="absolute inset-x-3 bottom-2 h-1 rounded-full bg-[#ff5a40]" />
+                    <span className="absolute inset-x-3 bottom-2 h-1 rounded-full bg-[#ff5a40] !text-white [&_*]:!text-white" />
                   ) : null}
                 </button>
               );
@@ -414,7 +414,7 @@ function GalleryAction({
     <button
       type="button"
       onClick={onClick}
-      className="inline-flex min-h-11 items-center gap-2 rounded-[14px] border border-white/20 px-5 text-sm font-black text-white transition hover:border-[#ff5a40] hover:bg-[#ff5a40]"
+      className="inline-flex min-h-11 items-center gap-2 rounded-[14px] border border-white/20 px-5 text-sm font-black text-white transition hover:border-[#ff5a40] hover:bg-[#ff5a40] !text-white [&_*]:!text-white"
     >
       {icon}
       {label}
@@ -450,7 +450,7 @@ function SummaryCard({
 
             <span className="inline-flex items-center gap-2">
               <Star size={17} className="fill-[#ff5a40] text-[#ff5a40]" />
-              <span className="text-[#111111]">{provider.rating}</span>
+              <span className="text-white">{provider.rating}</span>
               {provider.reviewCount} reviews
             </span>
 
@@ -524,7 +524,7 @@ function AboutCard({ provider }: { provider: ProviderDetail }) {
             key={highlight}
             className="flex items-center gap-3 rounded-[16px] border border-[#eee8e3] bg-[#fffaf8] p-4 text-sm font-bold"
           >
-            <span className="flex size-7 items-center justify-center rounded-full bg-[#ff5a40] text-white">
+            <span className="flex size-7 items-center justify-center rounded-full bg-[#ff5a40] text-white !text-white [&_*]:!text-white">
               <Check size={15} strokeWidth={3} />
             </span>
             {highlight}
@@ -544,7 +544,7 @@ function PillCard({ title, items }: { title: string; items: string[] }) {
         {items.map((item) => (
           <span
             key={item}
-            className="rounded-full border border-[#ff5a40]/30 bg-[#fff0ec] px-4 py-2 text-sm font-black text-[#ff5a40] transition hover:bg-[#ff5a40] hover:text-white"
+            className="rounded-full border border-[#ff5a40]/30 bg-[#fff0ec] px-4 py-2 text-sm font-black text-[#ff5a40] transition hover:bg-[#ff5a40] hover:text-white !text-white [&_*]:!text-white"
           >
             {item}
           </span>
@@ -571,7 +571,7 @@ function QuickQuestions() {
           <button
             key={question}
             type="button"
-            className="rounded-full border border-[#ff5a40] bg-white px-4 py-2 text-sm font-bold transition hover:bg-[#ff5a40] hover:text-white"
+            className="rounded-full border border-[#ff5a40] bg-white px-4 py-2 text-sm font-bold transition hover:bg-[#ff5a40] hover:text-white !text-white [&_*]:!text-white"
           >
             {question}
           </button>
@@ -699,7 +699,7 @@ function ContactCard({ provider }: { provider: ProviderDetail }) {
           className="min-h-28 w-full resize-none rounded-[16px] border border-[#deded9] bg-white p-4 text-sm font-bold outline-none transition focus:border-[#ff5a40] focus:ring-4 focus:ring-[#fff0ec]"
         />
 
-        <button type="button" className="min-h-14 w-full rounded-[16px] bg-[#ff5a40] px-5 text-sm font-black text-white transition hover:bg-[#ed422b]">
+        <button type="button" className="min-h-14 w-full rounded-[16px] bg-[#ff5a40] px-5 text-sm font-black text-white transition hover:bg-[#ed422b] !text-white [&_*]:!text-white">
           Request Quote
         </button>
 
@@ -753,7 +753,7 @@ function ShareCard() {
           <button
             key={item}
             type="button"
-            className="flex size-11 items-center justify-center rounded-[14px] bg-[#111111] text-sm font-black text-white transition hover:bg-[#ff5a40]"
+            className="flex size-11 items-center justify-center rounded-[14px] bg-[#111111] text-sm font-black text-white transition hover:bg-[#ff5a40] !text-white [&_*]:!text-white"
           >
             {item}
           </button>

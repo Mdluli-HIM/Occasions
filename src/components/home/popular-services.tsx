@@ -29,7 +29,7 @@ export function PopularServices() {
 
                 <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-black/0 to-black/25 opacity-70 transition-opacity duration-[1200ms] ease-out group-hover:opacity-90" />
 
-                <div className="absolute inset-0 bg-[#ff5a40]/0 mix-blend-multiply transition-colors duration-[1200ms] ease-out group-hover:bg-[#ff5a40]/5" />
+                <div className="absolute inset-0 bg-[#ff5a40]/0 mix-blend-multiply transition-colors duration-[1200ms] ease-out group-hover:bg-[#ff5a40]/5 !text-white [&_*]:!text-white" />
               </div>
 
               <div className="p-5">

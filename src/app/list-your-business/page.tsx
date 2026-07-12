@@ -1,6 +1,5 @@
 "use client";
 
-import type { FormEvent } from "react";
 import { useState } from "react";
 import Link from "next/link";
 import {
@@ -8,7 +7,6 @@ import {
   Check,
   ChevronRight,
   ChevronUp,
-  Phone,
   Plus,
   X,
 } from "lucide-react";
@@ -147,18 +145,12 @@ const faqs = [
 
 export default function ListYourBusinessPage() {
   const [openFaq, setOpenFaq] = useState(0);
-  const [submitted, setSubmitted] = useState(false);
-
-  function handleCallbackSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setSubmitted(true);
-  }
 
   return (
     <main className="min-h-screen bg-white text-[#111111]">
       <Header />
 
-      <section className="bg-[#ff5a40] px-5 py-16 text-center text-white md:py-20">
+      <section className="bg-[#ff5a40] px-5 py-16 text-center text-white md:py-20 !text-white [&_*]:!text-white">
         <div className="mx-auto max-w-4xl">
           <h1 className="text-4xl font-black tracking-tight md:text-6xl">
             List Your Event Business
@@ -175,13 +167,6 @@ export default function ListYourBusinessPage() {
               className="inline-flex min-h-[52px] min-w-[160px] items-center justify-center rounded-[14px] bg-[#111111] px-7 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-black"
             >
               View Packages
-            </a>
-
-            <a
-              href="#callback"
-              className="inline-flex min-h-[52px] min-w-[180px] items-center justify-center rounded-[14px] bg-[#111111] px-7 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-black"
-            >
-              Request Call Back
             </a>
           </div>
         </div>
@@ -300,17 +285,17 @@ export default function ListYourBusinessPage() {
                   </div>
 
                   <div className="mt-auto pt-9">
-                    <a
-                      href="#callback"
+                    <Link
+                      href="/provider-onboarding"
                       className={`flex min-h-[52px] items-center justify-center gap-2 rounded-[14px] px-6 text-sm font-black transition hover:-translate-y-0.5 ${
                         item.featured
                           ? "bg-[#ff5a40] text-white hover:bg-[#ed422b]"
                           : "border border-[#d8deea] bg-white text-[#171436] hover:border-[#ff5a40] hover:text-[#ff5a40]"
-                      }`}
+                      } !text-white [&_*]:!text-white`}
                     >
                       {item.cta}
                       <ChevronRight size={17} />
-                    </a>
+                    </Link>
                   </div>
                 </article>
               ))}
@@ -395,65 +380,10 @@ export default function ListYourBusinessPage() {
         </div>
       </section>
 
-      <section id="callback" className="bg-[#f7f7f7] px-5 py-16 md:py-20">
-        <div className="mx-auto grid max-w-6xl gap-10 rounded-[18px] bg-white p-8 shadow-[0_28px_80px_rgba(17,17,17,0.08)] md:grid-cols-2 md:p-14">
-          <div>
-            <h2 className="text-3xl font-black text-[#171436]">
-              Request a Call Back
-            </h2>
+      
 
-            <form onSubmit={handleCallbackSubmit} className="mt-8 space-y-5">
-              <input
-                required
-                placeholder="Name"
-                className="min-h-14 w-full rounded-[8px] border border-[#d2d9e4] px-4 text-base font-semibold outline-none transition placeholder:text-[#9ca6b5] focus:border-[#ff5a40] focus:ring-4 focus:ring-[#fff0ec]"
-              />
-
-              <input
-                required
-                type="email"
-                placeholder="Email"
-                className="min-h-14 w-full rounded-[8px] border border-[#d2d9e4] px-4 text-base font-semibold outline-none transition placeholder:text-[#9ca6b5] focus:border-[#ff5a40] focus:ring-4 focus:ring-[#fff0ec]"
-              />
-
-              <input
-                required
-                placeholder="Mobile"
-                className="min-h-14 w-full rounded-[8px] border border-[#d2d9e4] px-4 text-base font-semibold outline-none transition placeholder:text-[#9ca6b5] focus:border-[#ff5a40] focus:ring-4 focus:ring-[#fff0ec]"
-              />
-
-              <button
-                type="submit"
-                className="min-h-14 w-full rounded-[8px] bg-[#43c6a0] px-6 text-base font-black text-white transition hover:-translate-y-0.5 hover:bg-[#34b08d]"
-              >
-                Send
-              </button>
-            </form>
-          </div>
-
-          <div className="flex flex-col items-center justify-center text-center">
-            <div className="flex size-28 items-center justify-center rounded-full border border-[#ff5a40]/30 bg-white text-[#111111]">
-              <Phone size={42} />
-            </div>
-
-            <h3 className="mt-8 text-3xl font-medium text-[#171436]">
-              Speak to an Occasions Consultant
-            </h3>
-
-            <p className="mt-5 text-5xl font-black tracking-tight text-[#171436]">
-              0861 000 724
-            </p>
-
-            <p className="mt-5 text-base font-semibold text-[#171436]">
-              Weekdays 8am - 5pm
-            </p>
-          </div>
-        </div>
-      </section>
 
       <Footer />
-
-      {submitted ? <SuccessModal onClose={() => setSubmitted(false)} /> : null}
     </main>
   );
 }
@@ -470,21 +400,18 @@ function Header() {
           <a href="#packages" className="transition hover:text-[#ff5a40]">
             Packages
           </a>
-          <a href="#callback" className="transition hover:text-[#ff5a40]">
-            Call Back
-          </a>
           <Link href="/search" className="transition hover:text-[#ff5a40]">
             Browse Providers
           </Link>
         </nav>
 
-        <a
-          href="#callback"
-          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[12px] bg-[#ff5a40] px-5 text-sm font-black text-white transition hover:bg-[#ed422b]"
+        <Link
+          href="/provider-onboarding"
+          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[12px] bg-[#ff5a40] px-5 text-sm font-black text-white transition hover:bg-[#ed422b] !text-white [&_*]:!text-white"
         >
           Get Started
-          <ArrowRight size={17} />
-        </a>
+          <ArrowRight size={17} className="text-current" />
+        </Link>
       </div>
     </header>
   );
@@ -515,9 +442,7 @@ function Footer() {
         { label: "List Your Business", href: "/list-your-business" },
         { label: "Provider Packages", href: "/list-your-business#packages" },
         { label: "Featured Listings", href: "/list-your-business#packages" },
-        { label: "Quote Requests", href: "/list-your-business#callback" },
         { label: "Provider Login", href: "/list-your-business" },
-        { label: "Advertise Your Service", href: "/list-your-business#callback" },
       ],
     },
     {
@@ -547,7 +472,6 @@ function Footer() {
       links: [
         { label: "About Us", href: "/" },
         { label: "Careers", href: "/" },
-        { label: "Contact Us", href: "/list-your-business#callback" },
         { label: "Help Centre", href: "/" },
         { label: "Terms & Conditions", href: "/" },
         { label: "Privacy Policy", href: "/" },
@@ -572,7 +496,7 @@ function Footer() {
               <a
                 key={item}
                 href="#"
-                className="flex size-10 items-center justify-center rounded-full border border-white/10 text-white/90 transition hover:border-[#ff5a40] hover:bg-[#ff5a40] hover:text-white"
+                className="flex size-10 items-center justify-center rounded-full border border-white/10 text-white/90 transition hover:border-[#ff5a40] hover:bg-[#ff5a40] hover:text-white !text-white [&_*]:!text-white"
                 aria-label={`Occasions social ${item}`}
               >
                 {item}
@@ -632,49 +556,3 @@ function Footer() {
   );
 }
 
-function SuccessModal({ onClose }: { onClose: () => void }) {
-  return (
-    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/55 px-5 backdrop-blur-md">
-      <div className="w-full max-w-md overflow-hidden rounded-[24px] bg-white shadow-[0_30px_90px_rgba(17,17,17,0.35)]">
-        <div className="bg-[#ff5a40] p-7 text-white">
-          <div className="flex items-start justify-between gap-5">
-            <div>
-              <div className="flex size-14 items-center justify-center rounded-full bg-white text-[#ff5a40]">
-                <Check size={28} strokeWidth={3} />
-              </div>
-
-              <h3 className="mt-5 text-2xl font-black">Request received</h3>
-
-              <p className="mt-2 text-sm font-bold leading-6 text-white/90">
-                An Occasions consultant will contact you about listing your business.
-              </p>
-            </div>
-
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex size-11 shrink-0 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-white hover:text-[#111111]"
-              aria-label="Close success modal"
-            >
-              <X size={22} />
-            </button>
-          </div>
-        </div>
-
-        <div className="space-y-4 p-7">
-          <p className="text-sm font-semibold leading-7 text-[#596273]">
-            In the final version, this will create a provider onboarding lead and send it to the admin dashboard.
-          </p>
-
-          <button
-            type="button"
-            onClick={onClose}
-            className="min-h-12 w-full rounded-[12px] bg-[#ff5a40] px-5 text-sm font-black text-white transition hover:bg-[#ed422b]"
-          >
-            Done
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}

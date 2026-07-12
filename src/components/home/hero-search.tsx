@@ -146,7 +146,7 @@ export function HeroSearch() {
         </div>
       </div>
 
-      <div className="bg-[#ff5a40]">
+      <div className="bg-[#ff5a40] !text-white [&_*]:!text-white">
         <div className="mx-auto max-w-7xl px-5 pb-10 md:px-8 md:pb-12">
           <div
             className="mx-auto grid w-full max-w-xl grid-cols-4 items-center pt-5 text-center text-sm font-bold text-white md:max-w-4xl md:pt-6 md:text-lg"
@@ -720,7 +720,7 @@ function FilterDropdown(
           <button
             type="button"
             onClick={() => setDropdownOpen(false)}
-            className="mt-3 min-h-12 w-full rounded-[16px] bg-[#ff5a40] px-5 text-sm font-black text-white transition hover:bg-[#ed422b]"
+            className="mt-3 min-h-12 w-full rounded-[16px] bg-[#ff5a40] px-5 text-sm font-black text-white transition hover:bg-[#ed422b] !text-white [&_*]:!text-white"
           >
             Done
           </button>
@@ -1033,7 +1033,7 @@ function MoreFiltersModal(props: Record<string, unknown>) {
           </button>
         </div>
 
-        <div className="bg-[#ff5a40] px-7 py-6">
+        <div className="bg-[#ff5a40] px-7 py-6 !text-white [&_*]:!text-white">
           <div className="flex min-h-14 items-center gap-3 rounded-[16px] bg-white px-5 text-[#111111]">
             <Search size={20} className="shrink-0" />
 
@@ -1069,7 +1069,7 @@ function MoreFiltersModal(props: Record<string, unknown>) {
           <button
             type="button"
             onClick={closeModal}
-            className="min-h-14 rounded-[16px] bg-[#ff5a40] px-8 text-sm font-black text-white transition hover:bg-[#ed422b]"
+            className="min-h-14 rounded-[16px] bg-[#ff5a40] px-8 text-sm font-black text-white transition hover:bg-[#ed422b] !text-white [&_*]:!text-white"
           >
             Show Providers
           </button>

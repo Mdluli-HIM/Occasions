@@ -72,7 +72,7 @@ export function SiteHeader() {
               aria-label="Notifications"
             >
               <Bell size={20} />
-              <span className="absolute -right-1 -top-1 rounded-full bg-[#ff5a40] px-1.5 py-0.5 text-[10px] font-bold text-white">
+              <span className="absolute -right-1 -top-1 rounded-full bg-[#ff5a40] px-1.5 py-0.5 text-[10px] font-bold text-white !text-white [&_*]:!text-white">
                 9+
               </span>
             </button>
@@ -254,7 +254,7 @@ function MobileMenu({
             <Link
               href="/list-your-business"
               onClick={onClose}
-              className="flex min-h-14 items-center justify-center rounded-2xl bg-[#ff5a40] px-5 text-sm font-black text-white"
+              className="flex min-h-14 items-center justify-center rounded-2xl bg-[#ff5a40] px-5 text-sm font-black text-white !text-white [&_*]:!text-white"
             >
               List Your Business
             </Link>

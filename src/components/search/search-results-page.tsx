@@ -347,7 +347,7 @@ function DesktopSearchBar({
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   return (
-    <section className="sticky top-20 z-40 hidden border-y border-[#ed422b] bg-[#ff5a40] px-5 py-5 shadow-[0_10px_30px_rgba(17,17,17,0.12)] md:block">
+    <section className="sticky top-20 z-40 hidden border-y border-[#ed422b] bg-[#ff5a40] px-5 py-5 shadow-[0_10px_30px_rgba(17,17,17,0.12)] md:block !text-white [&_*]:!text-white">
       <div className="mx-auto max-w-7xl">
         <div className="rounded-[30px] bg-white/15 p-2.5">
           <div className="grid grid-cols-[minmax(220px,1.4fr)_repeat(4,minmax(132px,0.8fr))_136px_112px] gap-3">
@@ -485,7 +485,7 @@ function ProviderResultCard({
             isSaved
               ? "border-[#ff5a40] bg-[#ff5a40] text-white"
               : "border-[#deded9] bg-white text-[#ff5a40] hover:border-[#ff5a40] hover:bg-[#fff0ec]"
-          }`}
+          } !text-white [&_*]:!text-white`}
           aria-label={`Save ${provider.name}`}
         >
           <Heart size={21} className={isSaved ? "fill-white" : ""} />
@@ -559,7 +559,7 @@ function ProviderAlertsPanel() {
 
         <button
           type="button"
-          className="mt-5 min-h-12 w-full rounded-2xl bg-[#ff5a40] px-5 text-sm font-black text-white transition hover:bg-[#ed422b]"
+          className="mt-5 min-h-12 w-full rounded-2xl bg-[#ff5a40] px-5 text-sm font-black text-white transition hover:bg-[#ed422b] !text-white [&_*]:!text-white"
         >
           Manage alerts
         </button>
@@ -701,7 +701,7 @@ function MobileFiltersDrawer({
           <button
             type="button"
             onClick={onClose}
-            className="min-h-14 rounded-2xl bg-[#ff5a40] px-4 text-sm font-black text-white"
+            className="min-h-14 rounded-2xl bg-[#ff5a40] px-4 text-sm font-black text-white !text-white [&_*]:!text-white"
           >
             Show {resultCount}
           </button>
@@ -942,7 +942,7 @@ function EmptyState({ onClear }: { onClear: () => void }) {
       <button
         type="button"
         onClick={onClear}
-        className="mt-6 min-h-12 rounded-2xl bg-[#ff5a40] px-6 text-sm font-black text-white"
+        className="mt-6 min-h-12 rounded-2xl bg-[#ff5a40] px-6 text-sm font-black text-white !text-white [&_*]:!text-white"
       >
         Clear filters
       </button>
