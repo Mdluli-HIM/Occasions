@@ -26,14 +26,18 @@ export type FetchOptions = Omit<RequestInit, "body"> & {
 export async function apiRequest<T>(path: string, options: FetchOptions = {}): Promise<T> {
   const { token, body, headers, ...rest } = options;
 
+  // FormData (file uploads) must NOT get a JSON Content-Type or a
+  // JSON.stringify'd body — the browser sets its own multipart boundary.
+  const isFormData = typeof FormData !== "undefined" && body instanceof FormData;
+
   const response = await fetch(`${API_URL}${path}`, {
     ...rest,
     headers: {
-      "Content-Type": "application/json",
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...headers,
     },
-    body: body !== undefined ? JSON.stringify(body) : undefined,
+    body: isFormData ? (body as FormData) : body !== undefined ? JSON.stringify(body) : undefined,
     // Provider dashboard / search results should always be fresh.
     cache: options.cache ?? "no-store",
   });

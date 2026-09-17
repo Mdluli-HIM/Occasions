@@ -9,15 +9,8 @@ import {
   Users,
 } from "lucide-react";
 import { apiServer } from "@/lib/api-server";
+import { resolveMediaUrl } from "@/lib/utils";
 import type { ListingState } from "@/components/provider-dashboard/listing-editor-client";
-
-const galleryImages = [
-  "/images/provider-onboarding/preview-listing.png",
-  "/images/provider-onboarding/about-business.png",
-  "/images/provider-onboarding/stand-out.png",
-  "/images/provider-onboarding/preview-listing.png",
-  "/images/provider-onboarding/about-business.png",
-];
 
 export default async function ProviderCustomerPreviewPage() {
   // Same source of truth as the editor — GET /api/providers/me/listing.
@@ -45,15 +38,21 @@ export default async function ProviderCustomerPreviewPage() {
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px]">
           <div className="space-y-8">
             <section className="overflow-hidden rounded-[34px] bg-white p-3 shadow-sm">
-              <div className="grid gap-3 lg:grid-cols-[1.15fr_0.85fr]">
-                <GalleryBlock src={galleryImages[0]} large />
+              {listing.media.length > 0 ? (
+                <div className="grid gap-3 lg:grid-cols-[1.15fr_0.85fr]">
+                  <GalleryBlock src={resolveMediaUrl(listing.media[0].url)} large />
 
-                <div className="grid grid-cols-2 gap-3">
-                  {galleryImages.slice(1).map((image, index) => (
-                    <GalleryBlock key={`${image}-${index}`} src={image} />
-                  ))}
+                  <div className="grid grid-cols-2 gap-3">
+                    {listing.media.slice(1, 5).map((item) => (
+                      <GalleryBlock key={item.id} src={resolveMediaUrl(item.url)} />
+                    ))}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="flex min-h-[220px] items-center justify-center rounded-[26px] bg-[#f6f6f4] text-sm font-bold text-[#7b8495]">
+                  No photos yet.
+                </div>
+              )}
             </section>
 
             <section className="rounded-[34px] bg-white p-6 shadow-sm md:p-8">

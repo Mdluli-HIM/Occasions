@@ -25,3 +25,16 @@ export function createSearchUrl(params: {
 
   return `/search?${searchParams.toString()}`;
 }
+
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+
+/** Resolves a media URL that may be relative (local-disk storage, e.g.
+ * "/uploads/providers/x.jpg") or already absolute (R2/CDN storage) into a
+ * URL usable from the frontend origin. See src/lib/storage.ts on the
+ * backend for the two shapes this needs to handle. */
+export function resolveMediaUrl(url: string): string {
+  if (!url) return url;
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  return `${API_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+}

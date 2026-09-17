@@ -18,6 +18,7 @@ import {
   X,
 } from "lucide-react";
 import { apiClient, ApiError } from "@/lib/api";
+import { resolveMediaUrl } from "@/lib/utils";
 
 type EditKey =
   | "businessName"
@@ -27,7 +28,12 @@ type EditKey =
   | "areas"
   | "description"
   | "services"
-  | "occasions";
+  | "occasions"
+  | "contactPhone"
+  | "contactEmail"
+  | "contactWhatsapp";
+
+export type ListingMedia = { id: string; url: string; sortOrder: number };
 
 export type ListingState = {
   businessName: string;
@@ -39,15 +45,11 @@ export type ListingState = {
   description: string;
   services: string[];
   occasions: string[];
+  media: ListingMedia[];
+  contactPhone: string;
+  contactEmail: string;
+  contactWhatsapp: string;
 };
-
-const galleryImages = [
-  "/images/provider-onboarding/preview-listing.png",
-  "/images/provider-onboarding/about-business.png",
-  "/images/provider-onboarding/stand-out.png",
-  "/images/provider-onboarding/preview-listing.png",
-  "/images/provider-onboarding/about-business.png",
-];
 
 const editMeta: Record<
   EditKey,
@@ -96,35 +98,105 @@ const editMeta: Record<
     helper: "Separate each occasion with a comma.",
     multiline: true,
   },
+  contactPhone: {
+    title: "Edit phone number",
+    label: "Phone number",
+    helper: "Shown on your public profile and used for the Call button.",
+  },
+  contactEmail: {
+    title: "Edit email address",
+    label: "Email address",
+    helper: "Used for email enquiries from your profile.",
+  },
+  contactWhatsapp: {
+    title: "Edit WhatsApp number",
+    label: "WhatsApp number",
+    helper: "Include country code, digits only, e.g. 27821234567.",
+  },
 };
 
 export function ListingEditorClient({ initialListing }: { initialListing: ListingState }) {
   const [listing, setListing] = useState<ListingState>(initialListing);
   const [editing, setEditing] = useState<EditKey | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  async function handlePhotoUpload(files: FileList | null) {
+    if (!files || files.length === 0) return;
+
+    setUploading(true);
+    setSaveError(null);
+
+    const formData = new FormData();
+    Array.from(files).forEach((file) => formData.append("photos", file));
+
+    try {
+      const created = await apiClient<ListingMedia[]>("/api/providers/me/media", {
+        method: "POST",
+        body: formData,
+      });
+      setListing((current) => ({ ...current, media: [...current.media, ...created] }));
+    } catch (error) {
+      setSaveError(error instanceof ApiError ? error.message : "Failed to upload photo.");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function handlePhotoDelete(mediaId: string) {
+    setDeletingId(mediaId);
+    setSaveError(null);
+
+    try {
+      await apiClient(`/api/providers/me/media/${mediaId}`, { method: "DELETE" });
+      setListing((current) => ({
+        ...current,
+        media: current.media.filter((m) => m.id !== mediaId),
+      }));
+    } catch (error) {
+      setSaveError(error instanceof ApiError ? error.message : "Failed to delete photo.");
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
+  const contactKeys: EditKey[] = ["contactPhone", "contactEmail", "contactWhatsapp"];
 
   async function saveEdit(value: string) {
     if (!editing) return;
 
-    const patch: Partial<ListingState> = {
-      [editing]:
-        editing === "services" || editing === "occasions"
-          ? value
-              .split(",")
-              .map((item) => item.trim())
-              .filter(Boolean)
-          : value,
-    } as Partial<ListingState>;
-
     setSaveError(null);
 
     try {
+      if (contactKeys.includes(editing)) {
+        // Contact fields live on the base provider record, not the listing
+        // sub-resource — PATCH /api/providers/me (see provider-me.ts).
+        await apiClient("/api/providers/me", {
+          method: "PATCH",
+          body: { [editing]: value },
+        });
+        setListing((current) => ({ ...current, [editing]: value }));
+        setEditing(null);
+        return;
+      }
+
+      const patch: Partial<ListingState> = {
+        [editing]:
+          editing === "services" || editing === "occasions"
+            ? value
+                .split(",")
+                .map((item) => item.trim())
+                .filter(Boolean)
+            : value,
+      } as Partial<ListingState>;
+
       // GET/PATCH /api/providers/me/listing — see BACKEND_HANDOFF.md section 5.7.
       const updated = await apiClient<ListingState>("/api/providers/me/listing", {
         method: "PATCH",
         body: patch,
       });
-      setListing(updated);
+      setListing((current) => ({ ...current, ...updated, media: current.media }));
       setEditing(null);
     } catch (error) {
       setSaveError(error instanceof ApiError ? error.message : "Failed to save your change.");
@@ -178,28 +250,52 @@ export function ListingEditorClient({ initialListing }: { initialListing: Listin
       <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_360px]">
         <div className="space-y-8">
           <section className="overflow-hidden rounded-[34px] bg-white p-3 shadow-sm">
-            <div className="grid gap-3 lg:grid-cols-[1.15fr_0.85fr]">
-              <GalleryBlock src={galleryImages[0]} large />
+            {listing.media.length > 0 ? (
+              <div className="grid gap-3 lg:grid-cols-[1.15fr_0.85fr]">
+                <GalleryBlock
+                  src={resolveMediaUrl(listing.media[0].url)}
+                  large
+                  onDelete={() => handlePhotoDelete(listing.media[0].id)}
+                  deleting={deletingId === listing.media[0].id}
+                />
 
-              <div className="grid grid-cols-2 gap-3">
-                {galleryImages.slice(1).map((image, index) => (
-                  <GalleryBlock key={`${image}-${index}`} src={image} />
-                ))}
+                <div className="grid grid-cols-2 gap-3">
+                  {listing.media.slice(1, 5).map((item) => (
+                    <GalleryBlock
+                      key={item.id}
+                      src={resolveMediaUrl(item.url)}
+                      onDelete={() => handlePhotoDelete(item.id)}
+                      deleting={deletingId === item.id}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="flex min-h-[220px] flex-col items-center justify-center gap-3 rounded-[26px] bg-[#f6f6f4] text-center">
+                <ImageIcon size={32} className="text-[#9aa4b5]" />
+                <p className="max-w-xs text-sm font-bold text-[#7b8495]">
+                  No photos yet. Add some so customers can see your work.
+                </p>
+              </div>
+            )}
 
             <div className="mt-4 flex items-center justify-between gap-4 px-2 pb-2">
               <div className="flex items-center gap-3 text-sm font-black text-[#6b7280]">
                 <ImageIcon size={18} className="text-[#ff5a40]" />
-                Gallery visible to customers
+                {listing.media.length} photo{listing.media.length === 1 ? "" : "s"} visible to customers
               </div>
 
-              <button
-                type="button"
-                className="rounded-full border border-[#eee8e3] bg-white px-4 py-2 text-sm font-black text-[#111111] transition hover:border-[#ff5a40]/40 hover:bg-[#fff0ec] hover:text-[#ff5a40]"
-              >
-                Edit gallery
-              </button>
+              <label className="cursor-pointer rounded-full border border-[#eee8e3] bg-white px-4 py-2 text-sm font-black text-[#111111] transition hover:border-[#ff5a40]/40 hover:bg-[#fff0ec] hover:text-[#ff5a40]">
+                {uploading ? "Uploading..." : "Add photos"}
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  disabled={uploading}
+                  onChange={(event) => handlePhotoUpload(event.target.files)}
+                  className="hidden"
+                />
+              </label>
             </div>
           </section>
 
@@ -275,6 +371,31 @@ export function ListingEditorClient({ initialListing }: { initialListing: Listin
           >
             <TagList items={listing.occasions} />
           </EditableSection>
+
+          <section className="rounded-[30px] bg-white p-6 shadow-sm md:p-8">
+            <h2 className="text-2xl font-black">Contact details</h2>
+
+            <div className="mt-5 grid overflow-hidden rounded-[24px] border border-[#eee8e3] md:grid-cols-3">
+              <InfoCard
+                icon={<Users size={21} />}
+                label="Phone"
+                value={listing.contactPhone || "Not set"}
+                onEdit={() => setEditing("contactPhone")}
+              />
+              <InfoCard
+                icon={<Users size={21} />}
+                label="Email"
+                value={listing.contactEmail || "Not set"}
+                onEdit={() => setEditing("contactEmail")}
+              />
+              <InfoCard
+                icon={<Users size={21} />}
+                label="WhatsApp"
+                value={listing.contactWhatsapp || "Not set"}
+                onEdit={() => setEditing("contactWhatsapp")}
+              />
+            </div>
+          </section>
         </div>
 
         <aside className="space-y-5 xl:sticky xl:top-28 xl:self-start">
@@ -347,14 +468,36 @@ export function ListingEditorClient({ initialListing }: { initialListing: Listin
   );
 }
 
-function GalleryBlock({ src, large = false }: { src: string; large?: boolean }) {
+function GalleryBlock({
+  src,
+  large = false,
+  onDelete,
+  deleting = false,
+}: {
+  src: string;
+  large?: boolean;
+  onDelete?: () => void;
+  deleting?: boolean;
+}) {
   return (
     <div
-      className={`rounded-[26px] bg-[#f6f6f4] bg-cover bg-center ${
+      className={`group relative rounded-[26px] bg-[#f6f6f4] bg-cover bg-center ${
         large ? "min-h-[440px]" : "min-h-[214px]"
       }`}
       style={{ backgroundImage: `url(${src})` }}
-    />
+    >
+      {onDelete ? (
+        <button
+          type="button"
+          onClick={onDelete}
+          disabled={deleting}
+          className="absolute right-3 top-3 flex size-9 items-center justify-center rounded-full bg-[#111111]/70 text-white opacity-0 transition group-hover:opacity-100 hover:bg-[#ff5a40] disabled:opacity-60"
+          aria-label="Delete photo"
+        >
+          <X size={16} />
+        </button>
+      ) : null}
+    </div>
   );
 }
 
