@@ -6,7 +6,7 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { serviceOptions } from "@/data/search-results";
 import { type EventBriefDetail } from "@/lib/api";
 import { apiServer } from "@/lib/api-server";
-import { EventBriefProviderList } from "@/components/events/event-brief-provider-list";
+import { EventBriefProviderSelector } from "@/components/events/event-brief-provider-selector";
 
 function serviceLabel(slug: string) {
   return serviceOptions.find((option) => option.value === slug)?.label ?? slug;
@@ -73,33 +73,11 @@ export default async function EventBriefPage({
       </section>
 
       <section className="mx-auto max-w-5xl px-5 py-10 md:py-14">
-        {brief.serviceSlugs.map((slug) => {
-          const providers = providersByService[slug] ?? [];
-
-          return (
-            <div key={slug} className="mb-12">
-              <div className="flex items-center justify-between gap-4">
-                <h2 className="text-2xl font-black text-[#111111]">
-                  {serviceLabel(slug)}
-                </h2>
-                <Link
-                  href={`/search?serviceType=${slug}&location=${encodeURIComponent(brief.location)}`}
-                  className="text-sm font-black text-[#ff5a40] transition hover:text-[#ed422b]"
-                >
-                  See all
-                </Link>
-              </div>
-
-              {providers.length > 0 ? (
-                <EventBriefProviderList providers={providers} />
-              ) : (
-                <div className="mt-5 rounded-[20px] border border-dashed border-[#deded9] bg-white p-6 text-center text-sm font-bold text-[#7b8495]">
-                  No providers found yet for {serviceLabel(slug).toLowerCase()} in {brief.location || "your area"}.
-                </div>
-              )}
-            </div>
-          );
-        })}
+        <EventBriefProviderSelector
+          eventId={brief.id}
+          providersByService={providersByService}
+          serviceLabels={Object.fromEntries(brief.serviceSlugs.map((slug) => [slug, serviceLabel(slug)]))}
+        />
       </section>
 
       <SiteFooter />

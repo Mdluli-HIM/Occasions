@@ -7,6 +7,7 @@ type ProviderPageProps = {
   params: Promise<{
     providerId: string;
   }>;
+  searchParams: Promise<{ event?: string }>;
 };
 
 async function loadProvider(providerId: string): Promise<ProviderDetail | null> {
@@ -32,13 +33,14 @@ export async function generateMetadata({ params }: ProviderPageProps) {
   };
 }
 
-export default async function ProviderPage({ params }: ProviderPageProps) {
+export default async function ProviderPage({ params, searchParams }: ProviderPageProps) {
   const { providerId } = await params;
+  const { event: eventId } = await searchParams;
   const provider = await loadProvider(providerId);
 
   if (!provider) {
     notFound();
   }
 
-  return <ProviderDetailPage provider={provider} />;
+  return <ProviderDetailPage provider={provider} eventId={eventId} />;
 }

@@ -32,7 +32,7 @@ import { useSession } from "next-auth/react";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 
-export function ProviderDetailPage({ provider }: { provider: ProviderDetail }) {
+export function ProviderDetailPage({ provider, eventId }: { provider: ProviderDetail; eventId?: string }) {
   const { data: session } = useSession();
   const [activeImage, setActiveImage] = useState(provider.images[0]);
   const [saved, setSaved] = useState(false);
@@ -129,6 +129,24 @@ export function ProviderDetailPage({ provider }: { provider: ProviderDetail }) {
           </div>
         </div>
       </header>
+
+      {eventId ? (
+        <div className="border-b border-[#ff5a40]/20 bg-[#fff0ec] px-5 py-3">
+          <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 md:px-8">
+            <p className="text-sm font-bold text-[#111111]">
+              Browsing providers for your event
+            </p>
+
+            <Link
+              href={`/events/${eventId}`}
+              className="inline-flex items-center gap-2 text-sm font-black text-[#ff5a40] transition hover:text-[#ed422b]"
+            >
+              <ArrowLeft size={16} />
+              Back to your event
+            </Link>
+          </div>
+        </div>
+      ) : null}
 
       <section className="border-y border-[#ed422b] bg-[#ff5a40] px-5 py-4 text-white">
         <div className="mx-auto flex max-w-7xl items-center gap-2 text-sm font-bold">
