@@ -30,8 +30,7 @@ type EditKey =
   | "services"
   | "occasions"
   | "contactPhone"
-  | "contactEmail"
-  | "contactWhatsapp";
+  | "contactEmail";
 
 export type ListingMedia = { id: string; url: string; sortOrder: number };
 
@@ -48,7 +47,6 @@ export type ListingState = {
   media: ListingMedia[];
   contactPhone: string;
   contactEmail: string;
-  contactWhatsapp: string;
 };
 
 const editMeta: Record<
@@ -101,17 +99,12 @@ const editMeta: Record<
   contactPhone: {
     title: "Edit phone number",
     label: "Phone number",
-    helper: "Shown on your public profile and used for the Call button.",
+    helper: "Used for your account — customers reach you through Occasions messaging.",
   },
   contactEmail: {
     title: "Edit email address",
     label: "Email address",
-    helper: "Used for email enquiries from your profile.",
-  },
-  contactWhatsapp: {
-    title: "Edit WhatsApp number",
-    label: "WhatsApp number",
-    helper: "Include country code, digits only, e.g. 27821234567.",
+    helper: "Used for your account and notifications.",
   },
 };
 
@@ -161,7 +154,7 @@ export function ListingEditorClient({ initialListing }: { initialListing: Listin
     }
   }
 
-  const contactKeys: EditKey[] = ["contactPhone", "contactEmail", "contactWhatsapp"];
+  const contactKeys: EditKey[] = ["contactPhone", "contactEmail"];
 
   async function saveEdit(value: string) {
     if (!editing) return;
@@ -375,7 +368,7 @@ export function ListingEditorClient({ initialListing }: { initialListing: Listin
           <section className="rounded-[30px] bg-white p-6 shadow-sm md:p-8">
             <h2 className="text-2xl font-black">Contact details</h2>
 
-            <div className="mt-5 grid overflow-hidden rounded-[24px] border border-[#eee8e3] md:grid-cols-3">
+            <div className="mt-5 grid overflow-hidden rounded-[24px] border border-[#eee8e3] md:grid-cols-2">
               <InfoCard
                 icon={<Users size={21} />}
                 label="Phone"
@@ -388,13 +381,10 @@ export function ListingEditorClient({ initialListing }: { initialListing: Listin
                 value={listing.contactEmail || "Not set"}
                 onEdit={() => setEditing("contactEmail")}
               />
-              <InfoCard
-                icon={<Users size={21} />}
-                label="WhatsApp"
-                value={listing.contactWhatsapp || "Not set"}
-                onEdit={() => setEditing("contactWhatsapp")}
-              />
             </div>
+            <p className="mt-3 text-xs font-bold text-[#9aa4b5]">
+              Customers reach you through Occasions messaging — phone and email are used only for account purposes.
+            </p>
           </section>
         </div>
 

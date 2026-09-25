@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Check, MapPin, Star } from "lucide-react";
-import { apiClient, type ProviderListing } from "@/lib/api";
+import { apiClient, type ProviderListing, type EventProviderLead } from "@/lib/api";
 
 type ProvidersByService = Record<string, ProviderListing[]>;
 
@@ -15,14 +15,18 @@ type BatchLeadResponse = {
 export function EventBriefProviderSelector({
   eventId,
   providersByService,
+  leadsByProviderId,
   serviceLabels,
 }: {
   eventId: string;
   providersByService: ProvidersByService;
+  leadsByProviderId: Record<string, EventProviderLead>;
   serviceLabels: Record<string, string>;
 }) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [requested, setRequested] = useState<Set<string>>(new Set());
+  const [requested, setRequested] = useState<Set<string>>(
+    () => new Set(Object.keys(leadsByProviderId)),
+  );
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastResult, setLastResult] = useState<{ created: number; skipped: number } | null>(null);
@@ -109,6 +113,7 @@ export function EventBriefProviderSelector({
                     eventId={eventId}
                     isSelected={selected.has(provider.id)}
                     isRequested={requested.has(provider.id)}
+                    lead={leadsByProviderId[provider.id] ?? null}
                     onToggle={() => toggle(provider.id)}
                   />
                 ))}
@@ -147,12 +152,14 @@ function ProviderSelectCard({
   eventId,
   isSelected,
   isRequested,
+  lead,
   onToggle,
 }: {
   provider: ProviderListing;
   eventId: string;
   isSelected: boolean;
   isRequested: boolean;
+  lead: EventProviderLead | null;
   onToggle: () => void;
 }) {
   return (
@@ -229,9 +236,23 @@ function ProviderSelectCard({
           </a>
         </div>
 
-        {isRequested ? (
+        {lead?.quote ? (
+          <div className="mt-3 rounded-[14px] border border-[#43c6a0]/30 bg-[#ecfdf5] p-3">
+            <p className="text-xs font-black uppercase tracking-[0.08em] text-[#059669]">
+              Quote received
+            </p>
+            <p className="mt-1 text-lg font-black text-[#111111]">
+              R{lead.quote.price.toLocaleString("en-ZA")}
+            </p>
+            {lead.quote.validUntil ? (
+              <p className="text-xs font-bold text-[#6b7280]">
+                Valid until {lead.quote.validUntil}
+              </p>
+            ) : null}
+          </div>
+        ) : isRequested ? (
           <span className="mt-3 inline-block rounded-full bg-[#ecfdf5] px-3 py-1 text-xs font-black text-[#059669]">
-            Requested
+            Requested — awaiting quote
           </span>
         ) : null}
       </div>

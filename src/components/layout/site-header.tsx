@@ -165,14 +165,24 @@ function AccountMenu({
                 Provider Dashboard
               </Link>
             ) : (
-              <Link
-                href="/saved"
-                onClick={() => setOpen(false)}
-                className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold text-[#111111] transition hover:bg-[#fff0ec] hover:text-[#ff5a40]"
-              >
-                <Heart size={17} />
-                Saved Providers
-              </Link>
+              <>
+                <Link
+                  href="/dashboard"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold text-[#111111] transition hover:bg-[#fff0ec] hover:text-[#ff5a40]"
+                >
+                  <CalendarDays size={17} />
+                  My Events
+                </Link>
+                <Link
+                  href="/saved"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold text-[#111111] transition hover:bg-[#fff0ec] hover:text-[#ff5a40]"
+                >
+                  <Heart size={17} />
+                  Saved Providers
+                </Link>
+              </>
             )}
 
             <button
@@ -432,7 +442,7 @@ function MobileAccountButton({
   status: StatusLike;
   isProvider: boolean | undefined;
 }) {
-  const href = status === "authenticated" ? (isProvider ? "/provider-dashboard" : "/saved") : "/login";
+  const href = status === "authenticated" ? (isProvider ? "/provider-dashboard" : "/dashboard") : "/login";
 
   return (
     <Link
@@ -638,6 +648,16 @@ function MobileMenu({
             >
               {isProvider ? "Provider Dashboard" : "List Your Business"}
             </Link>
+
+            {!isProvider ? (
+              <Link
+                href="/dashboard"
+                onClick={onClose}
+                className="flex min-h-14 items-center justify-center rounded-2xl border border-[#deded9] bg-white px-5 text-sm font-black text-[#111111]"
+              >
+                My Events
+              </Link>
+            ) : null}
 
             <Link
               href="/saved"

@@ -1,13 +1,16 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import {
+  AlertCircle,
   CheckCircle2,
   ChevronRight,
   Clock,
   Eye,
   Inbox,
+  PartyPopper,
   ShieldCheck,
   TrendingUp,
+  Wallet,
 } from "lucide-react";
 import { ProviderDashboardShell } from "@/components/provider-dashboard/provider-dashboard-shell";
 import { type DashboardLead } from "@/lib/api";
@@ -39,6 +42,12 @@ type DashboardStats = {
     completed: number;
     closed: number;
   };
+  today: {
+    newEnquiries: number;
+    pendingBookings: number;
+    upcomingBookingValue: number;
+  };
+  actionRequired: { label: string; href: string }[];
 };
 
 const LEAD_STATUS_STYLES: Record<DashboardLead["status"], string> = {
@@ -57,7 +66,7 @@ export default async function ProviderDashboardPage() {
     apiServer<DashboardLead[]>("/api/providers/me/leads"),
   ]);
 
-  const { provider, profileTasks, leadSummary } = stats;
+  const { provider, profileTasks, leadSummary, today, actionRequired } = stats;
   const completedTasks = profileTasks.filter((task) => task.completed).length;
 
   return (
@@ -65,6 +74,48 @@ export default async function ProviderDashboardPage() {
       title="Dashboard Overview"
       description="Track your listing performance, quote requests, profile strength and provider package in one place."
     >
+      {actionRequired.length > 0 ? (
+        <section className="mb-6 rounded-[26px] border border-[#ff5a40]/30 bg-[#fff8f6] p-6 shadow-sm">
+          <div className="flex items-center gap-2">
+            <AlertCircle size={20} className="text-[#ff5a40]" />
+            <h2 className="text-lg font-black">Action required</h2>
+          </div>
+          <div className="mt-4 grid gap-2">
+            {actionRequired.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className="flex items-center justify-between gap-3 rounded-[14px] border border-[#ff5a40]/20 bg-white px-4 py-3 text-sm font-bold text-[#111111] transition hover:border-[#ff5a40] hover:bg-[#fff0ec]"
+              >
+                {item.label}
+                <ChevronRight size={16} className="text-[#ff5a40]" />
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      <div className="mb-6 grid gap-5 md:grid-cols-3">
+        <StatCard
+          icon={<Inbox size={22} />}
+          label="New enquiries"
+          value={String(today.newEnquiries)}
+          helper="Awaiting your response"
+        />
+        <StatCard
+          icon={<PartyPopper size={22} />}
+          label="Pending bookings"
+          value={String(today.pendingBookings)}
+          helper="Requested, not yet confirmed"
+        />
+        <StatCard
+          icon={<Wallet size={22} />}
+          label="Upcoming booking value"
+          value={`R${today.upcomingBookingValue.toLocaleString("en-ZA")}`}
+          helper="Requested + confirmed bookings"
+        />
+      </div>
+
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
         <StatCard
           icon={<Eye size={22} />}
@@ -217,16 +268,16 @@ export default async function ProviderDashboardPage() {
 
           <section className="rounded-[26px] border border-[#ff5a40]/30 bg-[#fff8f6] p-6 shadow-sm">
             <ShieldCheck size={28} className="text-[#ff5a40]" />
-            <h2 className="mt-4 text-xl font-black">{provider.packageName}</h2>
+            <h2 className="mt-4 text-xl font-black">Your listing is live</h2>
             <p className="mt-2 text-sm font-semibold leading-6 text-[#596273]">
-              Your listing is currently active and visible in relevant search results.
+              Free, always — your listing is active and visible in relevant search results.
             </p>
 
             <Link
-              href="/list-your-business#packages"
+              href="/provider-dashboard/listing"
               className="mt-5 inline-flex min-h-[44px] items-center rounded-[14px] bg-[#ff5a40] px-4 text-sm font-black text-white transition hover:bg-[#ed422b]"
             >
-              Manage package
+              Edit listing
             </Link>
           </section>
         </aside>

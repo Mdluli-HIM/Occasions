@@ -1,10 +1,8 @@
 import { revalidatePath } from "next/cache";
 import {
   CalendarDays,
-  Mail,
   MapPin,
   MessageCircle,
-  Phone,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -99,21 +97,13 @@ export default async function ProviderLeadsPage() {
               </div>
 
               <div className="grid min-w-[240px] gap-3">
-                <a
-                  href={`tel:${lead.phone}`}
+                <Link
+                  href={`/provider-dashboard/leads/${lead.id}#conversation`}
                   className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[14px] bg-[#ff5a40] px-5 text-sm font-black text-white transition hover:bg-[#111111]"
                 >
-                  <Phone size={17} />
-                  Call lead
-                </a>
-
-                <a
-                  href={`mailto:${lead.email}`}
-                  className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[14px] border border-[#deded9] bg-white px-5 text-sm font-black transition hover:border-[#ff5a40] hover:text-[#ff5a40]"
-                >
-                  <Mail size={17} />
-                  Email lead
-                </a>
+                  <MessageCircle size={17} />
+                  Message customer
+                </Link>
 
                 <form action={markContacted}>
                   <input type="hidden" name="leadId" value={lead.id} />

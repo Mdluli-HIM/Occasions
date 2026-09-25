@@ -164,7 +164,20 @@ export function HeroSearch() {
                     type="button"
                     onMouseEnter={() => setHoveredTab(tab)}
                     onFocus={() => setHoveredTab(tab)}
-                    onClick={() => setActiveTab(tab)}
+                    onClick={() => {
+                      if (tab === "Providers") {
+                        router.push("/search");
+                        return;
+                      }
+                      if (tab === "Packages") {
+                        router.push("/list-your-business");
+                        return;
+                      }
+                      setActiveTab(tab);
+                      if (tab === "Occasions") {
+                        setOpenFilter("eventType");
+                      }
+                    }}
                     className={`relative flex min-w-0 justify-center px-3 pb-4 pt-3 transition-colors duration-200 md:px-5 ${
                       isActive || isVisible
                         ? "text-white"
@@ -203,13 +216,17 @@ export function HeroSearch() {
 
                   <span className="min-w-0 flex-1">
                     <span className="block text-xs font-bold uppercase tracking-[0.14em] text-[#8a8a8a]">
-                      Service
+                      {activeTab === "Occasions" ? "Occasion" : "Service"}
                     </span>
 
                     <input
                       value={service}
                       onChange={(event) => setService(event.target.value)}
-                      placeholder="What service do you need?"
+                      placeholder={
+                        activeTab === "Occasions"
+                          ? "What are you celebrating?"
+                          : "What service do you need?"
+                      }
                       className="mt-1 h-8 w-full border-0 bg-transparent text-base font-semibold text-[#111111] outline-none placeholder:text-[#8a8a8a]"
                     />
                   </span>

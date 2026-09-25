@@ -4,13 +4,12 @@ import { revalidatePath } from "next/cache";
 import {
   ArrowLeft,
   CalendarDays,
-  Mail,
   MapPin,
   MessageCircle,
-  Phone,
   Users,
 } from "lucide-react";
 import { ProviderDashboardShell } from "@/components/provider-dashboard/provider-dashboard-shell";
+import { MessageThread } from "@/components/messaging/message-thread";
 import { type DashboardLead } from "@/lib/api";
 import { apiServer } from "@/lib/api-server";
 
@@ -25,6 +24,22 @@ async function updateStatus(formData: FormData) {
     method: "PATCH",
     body: { status },
   });
+  revalidatePath(`/provider-dashboard/leads/${leadId}`);
+  revalidatePath("/provider-dashboard/leads");
+}
+
+async function sendQuote(formData: FormData) {
+  "use server";
+  const leadId = String(formData.get("leadId"));
+  const price = Number(formData.get("price"));
+  const message = String(formData.get("message") ?? "");
+  const validUntil = String(formData.get("validUntil") ?? "");
+
+  await apiServer(`/api/providers/me/leads/${leadId}/quote`, {
+    method: "POST",
+    body: { price, message, validUntil },
+  });
+
   revalidatePath(`/provider-dashboard/leads/${leadId}`);
   revalidatePath("/provider-dashboard/leads");
 }
@@ -93,14 +108,9 @@ export default async function LeadDetailPage({
           </div>
 
           <div className="grid min-w-[240px] gap-3">
-            <a href={`tel:${lead.phone}`} className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[14px] bg-[#ff5a40] px-5 text-sm font-black text-white transition hover:bg-[#111111]">
-              <Phone size={17} />
-              Call lead
-            </a>
-
-            <a href={`mailto:${lead.email}`} className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[14px] border border-[#deded9] bg-white px-5 text-sm font-black transition hover:border-[#ff5a40] hover:text-[#ff5a40]">
-              <Mail size={17} />
-              Email lead
+            <a href="#conversation" className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[14px] bg-[#ff5a40] px-5 text-sm font-black text-white transition hover:bg-[#111111]">
+              <MessageCircle size={17} />
+              Message customer
             </a>
 
             <div className="mt-2 grid gap-2">
@@ -129,6 +139,135 @@ export default async function LeadDetailPage({
             </div>
           </div>
         </div>
+
+        <div className="mt-8 border-t border-[#deded9] pt-8">
+          <p className="text-xs font-black uppercase tracking-[0.14em] text-[#9aa4b5]">
+            {lead.quote ? "Your quote" : "Respond to enquiry"}
+          </p>
+
+          {lead.quote ? (
+            <div className="mt-4 max-w-xl rounded-[20px] bg-[#f6f6f4] p-5">
+              <p className="text-2xl font-black text-[#111111]">
+                R{lead.quote.price.toLocaleString("en-ZA")}
+              </p>
+              {lead.quote.validUntil ? (
+                <p className="mt-1 text-xs font-bold text-[#9aa4b5]">
+                  Valid until {lead.quote.validUntil}
+                </p>
+              ) : null}
+              {lead.quote.message ? (
+                <p className="mt-3 text-sm font-semibold leading-6 text-[#343434]">
+                  {lead.quote.message}
+                </p>
+              ) : null}
+
+              <details className="mt-4">
+                <summary className="cursor-pointer text-xs font-black text-[#ff5a40]">
+                  Update this quote
+                </summary>
+                <form action={sendQuote} className="mt-4 grid max-w-md gap-3">
+                  <input type="hidden" name="leadId" value={lead.id} />
+                  <label className="block">
+                    <span className="mb-1 block text-xs font-black uppercase tracking-[0.1em] text-[#8a8a8a]">
+                      Price (R)
+                    </span>
+                    <input
+                      type="number"
+                      name="price"
+                      required
+                      min={0}
+                      defaultValue={lead.quote.price}
+                      className="min-h-12 w-full rounded-[12px] border border-[#deded9] bg-white px-3 text-sm font-bold outline-none focus:border-[#ff5a40]"
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="mb-1 block text-xs font-black uppercase tracking-[0.1em] text-[#8a8a8a]">
+                      Message
+                    </span>
+                    <textarea
+                      name="message"
+                      rows={3}
+                      defaultValue={lead.quote.message}
+                      className="w-full resize-none rounded-[12px] border border-[#deded9] bg-white p-3 text-sm font-semibold outline-none focus:border-[#ff5a40]"
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="mb-1 block text-xs font-black uppercase tracking-[0.1em] text-[#8a8a8a]">
+                      Valid until
+                    </span>
+                    <input
+                      type="date"
+                      name="validUntil"
+                      defaultValue={lead.quote.validUntil}
+                      className="min-h-12 w-full rounded-[12px] border border-[#deded9] bg-white px-3 text-sm font-bold outline-none focus:border-[#ff5a40]"
+                    />
+                  </label>
+                  <button
+                    type="submit"
+                    className="mt-1 min-h-12 rounded-[12px] bg-[#ff5a40] px-5 text-sm font-black text-white transition hover:bg-[#111111]"
+                  >
+                    Update quote
+                  </button>
+                </form>
+              </details>
+            </div>
+          ) : (
+            <form action={sendQuote} className="mt-4 grid max-w-md gap-3">
+              <input type="hidden" name="leadId" value={lead.id} />
+              <label className="block">
+                <span className="mb-1 block text-xs font-black uppercase tracking-[0.1em] text-[#8a8a8a]">
+                  Price (R)
+                </span>
+                <input
+                  type="number"
+                  name="price"
+                  required
+                  min={0}
+                  placeholder="18500"
+                  className="min-h-12 w-full rounded-[12px] border border-[#deded9] bg-white px-3 text-sm font-bold outline-none placeholder:text-[#c7c7c7] focus:border-[#ff5a40]"
+                />
+              </label>
+              <label className="block">
+                <span className="mb-1 block text-xs font-black uppercase tracking-[0.1em] text-[#8a8a8a]">
+                  Message
+                </span>
+                <textarea
+                  name="message"
+                  rows={3}
+                  placeholder="We can provide buffet catering for 150 guests..."
+                  className="w-full resize-none rounded-[12px] border border-[#deded9] bg-white p-3 text-sm font-semibold outline-none placeholder:text-[#c7c7c7] focus:border-[#ff5a40]"
+                />
+              </label>
+              <label className="block">
+                <span className="mb-1 block text-xs font-black uppercase tracking-[0.1em] text-[#8a8a8a]">
+                  Valid until
+                </span>
+                <input
+                  type="date"
+                  name="validUntil"
+                  className="min-h-12 w-full rounded-[12px] border border-[#deded9] bg-white px-3 text-sm font-bold outline-none focus:border-[#ff5a40]"
+                />
+              </label>
+              <button
+                type="submit"
+                className="mt-1 min-h-12 rounded-[12px] bg-[#ff5a40] px-5 text-sm font-black text-white transition hover:bg-[#111111]"
+              >
+                Send quote
+              </button>
+            </form>
+          )}
+        </div>
+      </article>
+
+      <article id="conversation" className="mt-6 flex h-[480px] flex-col rounded-[28px] border border-[#deded9] bg-white p-6 shadow-sm md:p-8">
+        <p className="mb-4 text-xs font-black uppercase tracking-[0.14em] text-[#9aa4b5]">
+          Conversation
+        </p>
+        <MessageThread
+          leadId={lead.id}
+          messagesEndpoint={`/api/providers/me/leads/${lead.id}/messages`}
+          currentSender="provider"
+        />
       </article>
     </ProviderDashboardShell>
   );

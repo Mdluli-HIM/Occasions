@@ -134,13 +134,14 @@ export type ProviderDetail = {
   description: string[];
   highlights: string[];
   overview: { title: string; rows: { label: string; value: string }[] }[];
-  reviews: { name: string; rating: number; date: string; comment: string }[];
+  reviews: { name: string; rating: number; date: string; comment: string; verified: boolean }[];
   contact: { person: string; phone: string; email: string; whatsapp: string };
   similar: { id: string; name: string; image: string; priceLabel: string; location: string }[];
 };
 
 export type EventBrief = {
   id: string;
+  title: string;
   occasion: string;
   location: string;
   eventDate: string;
@@ -151,9 +152,92 @@ export type EventBrief = {
   createdAt: string;
 };
 
+/** Shape returned by GET /api/events/me — an EventBrief plus dashboard counts. */
+export type EventSummary = EventBrief & {
+  serviceCount: number;
+  enquiryCount: number;
+};
+
+export type EventProviderLead = {
+  leadId: string;
+  status: string;
+  quote: Quote | null;
+};
+
+export type EventProgress = {
+  created: boolean;
+  contacted: boolean;
+  quoted: boolean;
+  booked: boolean;
+  completed: boolean;
+};
+
 export type EventBriefDetail = {
   brief: EventBrief;
   providersByService: Record<string, ProviderListing[]>;
+  leadsByProviderId: Record<string, EventProviderLead>;
+  progress: EventProgress;
+};
+
+export type Booking = {
+  id: string;
+  service: string;
+  price: number;
+  eventDate: string;
+  location: string;
+  status: "Requested" | "Confirmed" | "Declined" | "Completed" | "Cancelled";
+  createdAt: string;
+};
+
+export type CustomerBooking = Booking & {
+  providerName: string;
+  providerSlug: string;
+  eventOccasion: string;
+  eventTitle: string;
+  eventId: string;
+  hasReview: boolean;
+};
+
+export type Review = {
+  id: string;
+  name: string;
+  rating: number;
+  date: string;
+  comment: string;
+  verified: boolean;
+};
+
+export type ProviderBooking = Booking & {
+  customerName: string;
+  customerEmail: string;
+  eventOccasion: string;
+  eventTitle: string;
+};
+
+export type ActivityItem = {
+  type: "quote" | "message" | "booking_confirmed" | "booking_completed";
+  id: string;
+  providerName: string;
+  eventId: string | null;
+  leadId: string;
+  detail: string;
+  createdAt: string;
+};
+
+export type Message = {
+  id: string;
+  sender: "customer" | "provider";
+  body: string;
+  createdAt: string;
+};
+
+export type Quote = {
+  id: string;
+  price: number;
+  message: string;
+  validUntil: string;
+  status: "Sent" | "Accepted" | "Declined";
+  createdAt: string;
 };
 
 export type DashboardLead = {
@@ -172,4 +256,5 @@ export type DashboardLead = {
   urgency: "High" | "Medium" | "Low";
   receivedAt: string;
   contactMethod: "WhatsApp" | "Phone" | "Email";
+  quote?: Quote | null;
 };

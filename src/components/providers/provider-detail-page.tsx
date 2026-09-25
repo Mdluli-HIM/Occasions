@@ -33,7 +33,7 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 
 export function ProviderDetailPage({ provider, eventId }: { provider: ProviderDetail; eventId?: string }) {
-  const { data: session } = useSession();
+  const { data: session, status: sessionStatus } = useSession();
   const [activeImage, setActiveImage] = useState(provider.images[0]);
   const [saved, setSaved] = useState(false);
   const [footerInView, setFooterInView] = useState(false);
@@ -121,10 +121,10 @@ export function ProviderDetailPage({ provider, eventId }: { provider: ProviderDe
             </button>
 
             <a
-              href={`tel:${provider.contact.phone}`}
+              href="#contact"
               className="hidden min-h-12 items-center rounded-[16px] bg-[#ff5a40] px-6 text-sm font-black text-white transition hover:bg-[#ed422b] md:inline-flex"
             >
-              Contact Provider
+              Request a Quote
             </a>
           </div>
         </div>
@@ -204,7 +204,7 @@ export function ProviderDetailPage({ provider, eventId }: { provider: ProviderDe
           </div>
 
           <aside className="space-y-5 lg:sticky lg:top-24 lg:self-start">
-            <ContactCard provider={provider} />
+            <ContactCard provider={provider} isAuthenticated={sessionStatus === "authenticated"} />
             <TrustCard provider={provider} />
             <ShareCard />
             <ActionsCard />
@@ -580,8 +580,8 @@ function SummaryCard({
         />
         <Stat
           icon={<ShieldCheck size={20} />}
-          label="Status"
-          value={provider.promoted ? "Promoted" : "Listed"}
+          label="Trust"
+          value={provider.verified ? "Verified" : "Listed"}
         />
       </div>
     </section>
@@ -794,7 +794,15 @@ function ReviewsCard({ provider }: { provider: ProviderDetail }) {
           >
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="font-black">{review.name}</p>
+                <div className="flex items-center gap-2">
+                  <p className="font-black">{review.name}</p>
+                  {review.verified ? (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-[#ecfdf5] px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.06em] text-[#059669]">
+                      <ShieldCheck size={11} />
+                      Verified booking
+                    </span>
+                  ) : null}
+                </div>
                 <p className="text-sm font-bold text-[#8a8a8a]">
                   {review.date}
                 </p>
@@ -814,10 +822,17 @@ function ReviewsCard({ provider }: { provider: ProviderDetail }) {
   );
 }
 
-function ContactCard({ provider }: { provider: ProviderDetail }) {
+function ContactCard({
+  provider,
+  isAuthenticated,
+}: {
+  provider: ProviderDetail;
+  isAuthenticated: boolean;
+}) {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [createdLead, setCreatedLead] = useState<{ eventBriefId: string; leadId: string } | null>(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -841,15 +856,27 @@ function ContactCard({ provider }: { provider: ProviderDetail }) {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
+
+    if (!isAuthenticated) {
+      const next = typeof window !== "undefined" ? window.location.pathname : "/";
+      window.location.href = `/login?next=${encodeURIComponent(next)}`;
+      return;
+    }
+
     setSubmitting(true);
 
     try {
-      // Creates a Lead on the provider's dashboard — see
-      // BACKEND_HANDOFF.md section 5.5 / 5.6 (Quote inbox).
-      await apiClient(`/api/providers/${provider.id}/leads`, {
-        method: "POST",
-        body: form,
-      });
+      // Creates a one-service EventBrief + linked Lead together, so this
+      // enquiry is booking-compatible like every other lead in the system
+      // (see POST /api/events/quick-enquiry).
+      const result = await apiClient<{ eventBriefId: string; leadId: string }>(
+        "/api/events/quick-enquiry",
+        {
+          method: "POST",
+          body: { ...form, providerId: provider.id },
+        },
+      );
+      setCreatedLead(result);
       setSubmitted(true);
     } catch (err) {
       setError(
@@ -1040,26 +1067,13 @@ function ContactCard({ provider }: { provider: ProviderDetail }) {
             disabled={submitting}
             className="min-h-14 w-full rounded-[16px] bg-[#ff5a40] px-5 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-[#ed422b] hover:shadow-[0_14px_30px_rgba(255,90,64,0.28)] disabled:opacity-60"
           >
-            {submitting ? "Sending..." : "Request Quote"}
+            {submitting ? "Sending..." : isAuthenticated ? "Request Quote" : "Log in to Request Quote"}
           </button>
 
-          <div className="flex items-center justify-center gap-5 pt-1">
-            <a href={`https://wa.me/${provider.contact.whatsapp}`} className="inline-flex items-center gap-2 text-sm font-bold text-[#596273] transition hover:text-[#ff5a40]">
-              <WhatsAppIcon size={16} />
-              WhatsApp
-            </a>
-
-            <span className="text-[#deded9]">|</span>
-
-            <a href={`tel:${provider.contact.phone}`} className="inline-flex items-center gap-2 text-sm font-bold text-[#596273] transition hover:text-[#ff5a40]">
-              <Phone size={16} />
-              Call
-            </a>
-          </div>
         </form>
 
         <p className="mt-5 text-center text-xs leading-5 text-[#8a8a8a]">
-          Your request goes straight to this provider's Occasions dashboard.
+          Your request, the provider's quote, and all messaging stay inside Occasions.
         </p>
       </section>
 
@@ -1067,6 +1081,7 @@ function ContactCard({ provider }: { provider: ProviderDetail }) {
         <QuoteSuccessModal
           provider={provider}
           form={form}
+          eventBriefId={createdLead?.eventBriefId}
           onClose={() => setSubmitted(false)}
         />
       ) : null}
@@ -1077,6 +1092,7 @@ function ContactCard({ provider }: { provider: ProviderDetail }) {
 function QuoteSuccessModal({
   provider,
   form,
+  eventBriefId,
   onClose,
 }: {
   provider: ProviderDetail;
@@ -1089,6 +1105,7 @@ function QuoteSuccessModal({
     guestCount: string;
     message: string;
   };
+  eventBriefId?: string;
   onClose: () => void;
 }) {
   return (
@@ -1153,13 +1170,10 @@ function QuoteSuccessModal({
 
           <div className="grid gap-3 sm:grid-cols-2">
             <a
-              href={`https://wa.me/${provider.contact.whatsapp}`}
-              target="_blank"
-              rel="noreferrer"
+              href={eventBriefId ? `/events/${eventBriefId}` : "/dashboard/events"}
               className="flex min-h-12 items-center justify-center gap-2 rounded-[16px] bg-[#ff5a40] px-5 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-[#ed422b] hover:shadow-[0_12px_24px_rgba(255,90,64,0.28)]"
             >
-              <WhatsAppIcon size={18} />
-              <span>Chat on WhatsApp</span>
+              <span>View my events</span>
             </a>
 
             <button

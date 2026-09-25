@@ -38,7 +38,7 @@ export default function SignupPage() {
         return;
       }
 
-      router.push(role === "provider" ? "/provider-onboarding" : "/");
+      router.push(role === "provider" ? "/provider-onboarding" : "/dashboard");
       router.refresh();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Something went wrong. Please try again.");

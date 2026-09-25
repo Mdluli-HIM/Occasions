@@ -34,7 +34,7 @@ const packages: ProviderPackage[] = [
     period: "",
     subPrice: "",
     description:
-      "A full business profile so customers can find, compare and contact you — no cost, no catch.",
+      "A full business profile so customers can find, compare and contact you — no cost, no catch, no upsell.",
     cta: "Create Free Listing",
     featured: false,
     free: true,
@@ -45,57 +45,10 @@ const packages: ProviderPackage[] = [
       "Service areas",
       "Quote request inbox",
       "Provider dashboard",
+      "Messaging with customers",
+      "Reviews on completed bookings",
     ],
-    excludes: [
-      "Featured search placement",
-      "Homepage promotion",
-    ],
-  },
-  {
-    tag: "Coming soon",
-    name: "Featured Provider",
-    price: "R2 849",
-    period: "setup",
-    subPrice: "R199 / month",
-    description:
-      "Extra visibility for providers who want to stand out once they've got listings up and running.",
-    cta: "Notify Me",
-    featured: true,
-    free: false,
-    includes: [
-      "Everything in Free",
-      "Featured search placement",
-      "Promoted provider badge",
-      "Monthly enquiry summary",
-      "Listing improvement support",
-    ],
-    excludes: [
-      "Homepage campaign placement",
-      "Dedicated account manager",
-    ],
-  },
-  {
-    tag: "Coming soon",
-    name: "Premium Partner",
-    price: "Custom",
-    period: "monthly",
-    subPrice: "Built around your goals",
-    description:
-      "For providers who eventually want stronger exposure and custom growth support.",
-    cta: "Notify Me",
-    featured: false,
-    free: false,
-    includes: [
-      "Everything in Featured",
-      "Top category placement",
-      "Campaign visibility",
-      "Priority support",
-      "Custom profile improvements",
-    ],
-    excludes: [
-      "Guaranteed bookings",
-      "Payment processing",
-    ],
+    excludes: [],
   },
 ];
 
@@ -131,7 +84,7 @@ const faqs: { question: string; answer: string }[] = [
   {
     question: "How do customers contact me?",
     answer:
-      "Customers request a quote directly through your listing, which creates a lead in your provider dashboard. Call, email and WhatsApp details can also be added for customers who prefer to reach out directly.",
+      "Customers request a quote directly through your listing, which creates a lead in your provider dashboard. You respond with pricing and message the customer right there — no phone number or WhatsApp needed, so every enquiry and every reply is tracked in one place.",
   },
   {
     question: "Can I edit my listing later?",
@@ -142,11 +95,6 @@ const faqs: { question: string; answer: string }[] = [
     question: "What information should I provide?",
     answer:
       "Business name, service category, photos, areas served, price guidance, capacity, contact details and a short description of what you offer.",
-  },
-  {
-    question: "Can I promote my listing?",
-    answer:
-      "Featured and Premium placement are planned for providers who want stronger visibility in search results and category pages — free listings will always remain available alongside them.",
   },
 ];
 
@@ -199,18 +147,17 @@ export default function ListYourBusinessPage() {
             </p>
 
             <h2 className="mx-auto mt-4 max-w-3xl text-4xl font-light tracking-tight text-[#171436] md:text-5xl">
-              Start free. Grow when you're ready.
+              Completely free. No catch.
             </h2>
 
             <p className="mx-auto mt-5 max-w-2xl text-base font-semibold leading-7 text-[#596273]">
-              Every provider starts with a full free listing. Featured and
-              Premium visibility are on the way for providers who want to
-              stand out even more.
+              Every provider gets a full listing at no cost — no setup fee,
+              no monthly charge, no upsell later.
             </p>
           </div>
 
-          <div className="mx-auto mt-12 max-w-7xl rounded-[34px] bg-[#e8ebf4] p-4 shadow-[0_24px_70px_rgba(17,17,17,0.06)] md:p-6">
-            <div className="grid gap-4 lg:grid-cols-3">
+          <div className="mx-auto mt-12 max-w-2xl rounded-[34px] bg-[#e8ebf4] p-4 shadow-[0_24px_70px_rgba(17,17,17,0.06)] md:p-6">
+            <div className="grid gap-4">
               {packages.map((item) => (
                 <article
                   key={item.name}
@@ -288,23 +235,25 @@ export default function ListYourBusinessPage() {
                     </div>
                   </div>
 
-                  <div className="mt-7">
-                    <p className="text-sm font-black uppercase tracking-[0.14em] text-[#9aa4b5]">
-                      Not included
-                    </p>
+                  {item.excludes.length > 0 ? (
+                    <div className="mt-7">
+                      <p className="text-sm font-black uppercase tracking-[0.14em] text-[#9aa4b5]">
+                        Not included
+                      </p>
 
-                    <div className="mt-4 grid gap-3">
-                      {item.excludes.map((feature) => (
-                        <div
-                          key={feature}
-                          className="grid grid-cols-[22px_minmax(0,1fr)] gap-3 text-sm font-bold leading-6 text-[#7b8495]"
-                        >
-                          <X size={16} className="mt-1 text-[#9aa4b5]" />
-                          <span>{feature}</span>
-                        </div>
-                      ))}
+                      <div className="mt-4 grid gap-3">
+                        {item.excludes.map((feature) => (
+                          <div
+                            key={feature}
+                            className="grid grid-cols-[22px_minmax(0,1fr)] gap-3 text-sm font-bold leading-6 text-[#7b8495]"
+                          >
+                            <X size={16} className="mt-1 text-[#9aa4b5]" />
+                            <span>{feature}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  ) : null}
 
                   <div className="mt-auto pt-9">
                     <Link
@@ -419,7 +368,7 @@ function Header() {
 
         <nav className="hidden items-center gap-8 text-sm font-black text-[#171436] md:flex">
           <a href="#packages" className="transition hover:text-[#ff5a40]">
-            Pricing
+            What&apos;s included
           </a>
           <Link href="/search" className="transition hover:text-[#ff5a40]">
             Browse Providers

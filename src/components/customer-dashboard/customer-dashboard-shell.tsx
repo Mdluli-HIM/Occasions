@@ -8,12 +8,10 @@ import { usePathname } from "next/navigation";
 import {
   ArrowLeft,
   Bell,
-  ClipboardList,
+  CalendarHeart,
+  Heart,
   LayoutDashboard,
   PartyPopper,
-  Settings,
-  Star,
-  Store,
   UserRound,
 } from "lucide-react";
 
@@ -24,37 +22,27 @@ const navItems: Array<{
 }> = [
   {
     label: "Overview",
-    href: "/provider-dashboard",
+    href: "/dashboard",
     icon: LayoutDashboard,
   },
   {
-    label: "Leads",
-    href: "/provider-dashboard/leads",
-    icon: ClipboardList,
+    label: "My Events",
+    href: "/dashboard/events",
+    icon: CalendarHeart,
   },
   {
-    label: "Bookings",
-    href: "/provider-dashboard/bookings",
+    label: "My Bookings",
+    href: "/dashboard/bookings",
     icon: PartyPopper,
   },
   {
-    label: "Reviews",
-    href: "/provider-dashboard/reviews",
-    icon: Star,
-  },
-  {
-    label: "Listing",
-    href: "/provider-dashboard/listing",
-    icon: Store,
-  },
-  {
-    label: "Settings",
-    href: "/provider-dashboard/settings",
-    icon: Settings,
+    label: "Saved Providers",
+    href: "/saved",
+    icon: Heart,
   },
 ];
 
-export function ProviderDashboardShell({
+export function CustomerDashboardShell({
   title,
   description,
   children,
@@ -67,7 +55,7 @@ export function ProviderDashboardShell({
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const activeIndex = navItems.findIndex((item) => {
-    const isOverview = item.href === "/provider-dashboard";
+    const isOverview = item.href === "/dashboard";
 
     return isOverview
       ? pathname === item.href
@@ -92,7 +80,7 @@ export function ProviderDashboardShell({
             <span className="hidden h-8 w-px bg-[#deded9] md:block" />
 
             <p className="hidden text-sm font-black uppercase tracking-[0.16em] text-[#7b8495] md:block">
-              Provider Dashboard
+              My Occasions
             </p>
           </div>
 
@@ -112,13 +100,12 @@ export function ProviderDashboardShell({
               className="relative flex size-11 items-center justify-center rounded-full border border-[#eee8e3] bg-white text-[#ff5a40] shadow-sm transition hover:-translate-y-0.5 hover:border-[#ff5a40]/35 hover:bg-[#fff0ec]"
             >
               <Bell size={18} strokeWidth={2.4} className="text-[#ff5a40]" />
-              <span className="absolute right-2.5 top-2.5 size-2 rounded-full bg-[#ff5a40] ring-2 ring-white" />
             </button>
 
             <button
               type="button"
               className="flex size-11 items-center justify-center rounded-full bg-[#111111] text-white"
-              aria-label="Provider account"
+              aria-label="Account"
             >
               <UserRound size={19} />
             </button>
@@ -159,9 +146,7 @@ export function ProviderDashboardShell({
                 >
                   <Icon size={18} />
 
-                  <span className="min-w-0 flex-1">
-                    {item.label}
-                  </span>
+                  <span className="min-w-0 flex-1">{item.label}</span>
 
                   {isCurrent ? (
                     <span
@@ -182,7 +167,7 @@ export function ProviderDashboardShell({
         <section>
           <div className="mb-6 rounded-[30px] bg-[#111111] p-7 text-white md:p-8">
             <p className="text-sm font-black uppercase tracking-[0.18em] text-[#ff5a40]">
-              Occasions Provider
+              Occasions
             </p>
 
             <h1 className="mt-3 text-4xl font-black tracking-tight md:text-5xl">
